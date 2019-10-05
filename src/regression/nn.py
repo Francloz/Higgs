@@ -53,7 +53,7 @@ class NeuronLayer:
             # delta = np.dot(param[:-1], self.act_fun.derivative(self.last_output))
             delta = param[:-1] * self.act_fun.derivative(self.last_output)
         err = np.dot(delta, np.transpose(self.last_input, (1, 0)))
-        self.weights -= (lr() if isinstance(lr, Scheduler) else gamma)*err
+        self.weights -= (lr() if isinstance(lr, Scheduler) else lr)*err
         return np.dot(np.transpose(self.weights, (1, 0)), delta)
 
 
