@@ -14,6 +14,19 @@ def mse(x, y):
     return 1/x.size * np.sum((x - y)**2)
 
 
+def mpe(x, y, p):
+    """
+    Returns the Mean P-power Error between both vectors.
+
+    This method assumes both are vectors with he same shape.
+
+    :param x: first vector
+    :param y: second vector
+    :return: mse
+    """
+    return 1/x.size * np.sum((x - y)**p)
+
+
 def mae(x, y):
     """
     Returns the Mean Absolute Error between both vectors.

@@ -19,3 +19,14 @@ def l1_distance(x, y):
     :return: absolute distance between the points
     """
     return np.sum(np.abs(x - y))
+
+
+def lp_distance(x, y, p):
+    """
+    Computes the absolute distance between two points.
+    :param x: first point
+    :param y: second point
+    :param p: factor
+    :return: absolute distance between the points
+    """
+    return np.sum(np.abs(x-y)**p)**(1/p)
