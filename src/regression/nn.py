@@ -1,4 +1,6 @@
 import numpy as np
+import os
+from pathlib import Path
 from src.utils.scheduler import *
 
 
@@ -11,7 +13,7 @@ class NeuronLayer:
         :param activation_function: activation function
         :param initial_weights: initial weights (output_size, input_size+1)
         """
-        self.weights = np.random.normal(1, 1, (output_size, input_size+1)) if not initial_weights else initial_weights
+        self.weights = np.random.normal(0, .1, (output_size, input_size+1)) if not initial_weights else initial_weights
         self.act_fun = activation_function
         self.last_input = np.zeros(input_size)
         self.last_output = np.zeros(output_size)
@@ -43,13 +45,17 @@ class NeuronLayer:
         :return: returns the parameter that must be passed to the previous layer
         """
         if not self.hidden:
-
             delta = np.dot(self.act_fun(self.last_output) - param, self.act_fun.derivative(self.last_output))
         else:
             delta = param[:-1] * self.act_fun.derivative(self.last_output)
         err = np.dot(delta, np.transpose(self.last_input, (1, 0)))
         self.weights -= (lr() if isinstance(lr, Scheduler) else lr)*err
         return np.dot(np.transpose(self.weights, (1, 0)), delta)
+
+    def save(self, path):
+        f = open(path, "a")
+        np.savetxt(f, self.weights)
+        f.close()
 
 
 class NeuralNetwork:
@@ -84,8 +90,15 @@ class NeuralNetwork:
 
     def learn(self, inputs, labels, lr=10**-3):
         for col in range(inputs.shape[0]):
-            self(inputs[col, :])
+            output = self(inputs[col, :])
             self._back_prop(labels[col, :], lr)
+
+    def save(self, path):
+        parameter_file = Path(path)
+        if parameter_file.is_file():
+            os.remove(path)
+        for layer in self.layers:
+            layer.save(path)
 
 
 """
