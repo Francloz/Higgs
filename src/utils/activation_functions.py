@@ -105,7 +105,9 @@ class BipolarSigmoid(ActivationFunction):
     """
     Generic Sigmoid Function
 
-    x => (a - b)/(1 + e^d(x - c/2)) + b
+    x => (a - b)/(1 + e^d(c/2-x)) + b
+
+    (From here:https://stackoverflow.com/questions/43213069/fit-bipolar-sigmoid-python)
     """
     def __init__(self, a, b, c, d):
         """
@@ -120,7 +122,42 @@ class BipolarSigmoid(ActivationFunction):
         self.d = d
 
     def __call__(self, x):
-        return ((self.a-self.b) / (1 + np.exp(x-(self.c/2))**self.d)) + self.b
+        return ((self.a-self.b) / (1 + np.exp(self.c/2-x)**self.d)) + self.b
 
     def derivative(self, x):
-        return (-(self.a-self.b) * (1 + np.exp(x-(self.c/2))**self.d)**-2)*np.exp(x-(self.c/2))**self.d * self.d
+        return (-(self.a-self.b) * (1 + np.exp(self.c/2-x)**self.d)**-2)*np.exp(self.c/2-x)**self.d * self.d
+
+
+class SoftPlus(ActivationFunction):
+    """
+    SoftPlus
+
+    x => ln(1+e^-x)
+    """
+
+    def __call__(self, x):
+        return np.log(np.ones(x.shape) + np.exp(-x))
+
+    def derivative(self, x):
+        return (np.ones(x.shape) + np.exp(-x))**-1
+
+
+class ExpLinear(ActivationFunction):
+    """
+    Exponential to Linear
+
+    x => x              if x > 0
+         gamma*(e^-x-1) if x > 0
+
+    """
+    def __init__(self, gamma):
+        """
+        :param gamma: slope
+        """
+        self.gamma = gamma
+
+    def __call__(self, x):
+        return np.where(x < 0, self.gamma*(np.exp(x) - 1), x)
+
+    def derivative(self, x):
+        return np.where(x < 0, self.gamma*np.exp(x), 1)
