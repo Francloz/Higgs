@@ -1,44 +1,30 @@
 from src.regression.nn import *
 from src.utils.activation_functions import *
+import sys
 
 if __name__ == "__main__":
 
     nn = NeuralNetwork([NeuronLayer(1, 1, Identity(), hidden=False)])
-    for i in range(50):
-        x1, x2, x3, x4 = np.array([0]), \
-                         np.array([1]), \
-                         np.array([2]), \
-                         np.array([3])
-        y1 = nn(x1)
-        nn.back_prop(np.array([0]))
-        y2 = nn(x2)
-        nn.back_prop(np.array([2]))
-        y3 = nn(x3)
-        nn.back_prop(np.array([4]))
-        y4 = nn(x4)
-        nn.back_prop(np.array([6]))
+    max_iter = 1000
+    for i in range(max_iter):
+        sys.stdout.write("\rProgress: %d%%" % int(i/max_iter*100))
+        nn.learn(np.array([[0], [1], [2], [3]]), np.array([[0], [2], [4], [6]]))
+    sys.stdout.write("\r")
 
-    print("%f %f %f %f" % (y1, y2, y3, y4))
+    print("%f %f %f %f" % (nn(np.array([0])), nn(np.array([1])), nn(np.array([2])), nn(np.array([3]))))
 
-    nn = NeuralNetwork([NeuronLayer(2, 3, Sigmoid()),
-                        NeuronLayer(3, 2, Sigmoid()),
-                        NeuronLayer(2, 1, Identity(), hidden=False)])
+    nns = list(NeuralNetwork([NeuronLayer(2, 4, LeakyReLU()),
+                              NeuronLayer(4, 2, LeakyReLU()),
+                              NeuronLayer(2, 1, Identity(), hidden=False)]) for i in range(4))
 
-    for i in range(1, 10000):
+    max_iter = 10000
+    for i in range(max_iter):
+        sys.stdout.write("\rProgress: %0.1f%%" % float(i/max_iter*100))
+        for nn in nns:
+            nn.learn(np.array([[0, 1], [1, 0], [1, 1], [0, 0]]), np.array([[0], [0], [1], [1]]), lr=10**-3)
+    sys.stdout.write("\r")
 
-        x1, x2, x3, x4 = np.array([0, 1]),\
-                         np.array([1, 0]),\
-                         np.array([1, 1]),\
-                         np.array([0, 0])
-        y1 = nn(x1)
-        nn.back_prop(np.array([0]))
-        y2 = nn(x2)
-        nn.back_prop(np.array([0]))
-        y3 = nn(x3)
-        nn.back_prop(np.array([1]))
-        y4 = nn(x4)
-        nn.back_prop(np.array([1]))
-
-    print("%f %f %f %f" % (y1, y2, y3, y4))
+    for nn in nns:
+        print("%f %f %f %f" % (nn(np.array([0, 1])), nn(np.array([1, 0])), nn(np.array([1, 1])), nn(np.array([0, 0]))))
 
 
