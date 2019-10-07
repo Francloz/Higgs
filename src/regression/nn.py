@@ -57,6 +57,12 @@ class NeuronLayer:
         np.savetxt(f, self.weights)
         f.close()
 
+    def set_weights(self, weights):
+        self.weights = weights
+
+    def get_weights(self):
+        return self.weights
+
 
 class NeuralNetwork:
     def __init__(self, layers):
@@ -99,6 +105,11 @@ class NeuralNetwork:
             os.remove(path)
         for layer in self.layers:
             layer.save(path)
+
+    def load(self, path):
+        file_array = np.fromfile(path, sep=" ")
+        for layer in self.layers:
+            layer.set_weights(np.reshape(file_array[:layer.get_weights().size], layer.get_weights().shape))
 
 
 """
