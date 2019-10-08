@@ -1,5 +1,9 @@
 import numpy as np
 
+"""
+This file will be deprecated soon.
+"""
+
 
 def mse(x, y):
     """

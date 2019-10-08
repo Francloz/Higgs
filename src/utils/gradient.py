@@ -1,5 +1,9 @@
 import numpy as np
 
+"""
+This file will be deprecated soon.
+"""
+
 
 def linear_gradient_mse(y, tx, w):
     """
