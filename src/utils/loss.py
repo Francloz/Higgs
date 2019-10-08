@@ -6,7 +6,6 @@ This file will be the combination of gradient.py and error.py
 Loss functions:
     - MAE
     - MSE
-    - MPE
     - Huber
     - LogCosh
     - Quantile
@@ -14,10 +13,10 @@ Loss functions:
 
 
 class Loss:
-    def __call__(self, tx, y, w):
+    def __call__(self, x, y, w):
         pass
 
-    def gradient(self, tx, y, w):
+    def gradient(self, x, y, w):
         pass
 
 
@@ -31,55 +30,31 @@ class MSE(Loss):
 
     This class computes the mean squared error of the 'tx*W - y' rows and the gradient.
     """
-    def __call__(self, tx, y, w):
-        return np.mean((np.dot(tx, w) - y)**2, axis=1)
+    def __call__(self, x, y, w):
+        return np.mean((np.dot(x, w) - y)**2)
 
     def gradient(self, x, y, w):
-        # Each column of w has gradient
-        # 1/b t(txi) * (txi*Wj - yi)
-        mean = np.zeros(w.shape)
-        for i in range(x.shape[0]):
-            column = np.expand_dims(x[i], axis=1)
-            expanded_matrix = np.reshape(np.repeat(np.expand_dims(x[i], axis=1), w.shape[1]), w.shape)
-            error = np.dot(x[i], w) - y[i]
-            mean += np.dot(np.dot(x[i], w) - y[i], np.reshape(np.repeat(np.expand_dims(x[i], axis=1), w.shape[1]), w.shape))
-        return mean/x.shape[0]
-
-if __name__ == "__main__":
-    w = np.zeros((2, 2))
-    x = np.array([[1, 2],
-                  [2, 3]])
-    y = np.array([[1, 2],
-                  [2, 3]])
-
-    for i in range(100):
-        w -= MSE().gradient(x, y, w)
-    print(np.dot(x, w))
-    pass
-"""
-delta = np.dot(self.act_fun(self.last_output) - param, self.act_fun.derivative(self.last_output))
-err = np.dot(delta, np.transpose(self.last_input, (1, 0)))
-self.weights -= (lr() if isinstance(lr, Scheduler) else lr)*err
-"""
+        der = np.zeros(w.shape)
+        # m = np.transpose((np.dot(x, w) - y), (1, 0))
+        for c in range(w.shape[1]):
+            loss_v = np.expand_dims(np.dot(x, w[:, c])-y[:, c], axis=0)
+            der[:, c] = np.dot(loss_v, x)
+        # aux_der = np.dot(m, x)
+        # print(np.sum(der-aux_der)*100000)
+        return der,
 
 
 class MAE(Loss):
-    def __call__(self, tx, y, w):
-        return 1 / y.size * np.sum(np.abs(np.dot(tx, w) - y))
+    def __call__(self, x, y, w):
+        return np.mean(np.abs(np.dot(x, w) - y))
 
-    def gradient(self, tx, y, w):
-        pass  # return 1 / y.size * np.sum(tx.dot(y - np.dot(tx, w)))
-
-
-class MPE(Loss):
-    def __init__(self, p=2):
-        self.p = p
-
-    def __call__(self, tx, y, w):
-        return 1 / y.size * np.sum((np.dot(tx, w) - y) ** self.p)
-
-    def gradient(self, tx, y, w):
-        pass  # return 1/y.size*np.sum(tx.dot(y - np.dot(tx, w)), tx)
+    def gradient(self, x, y, w):
+        der = np.zeros(w.shape)
+        for c in range(w.shape[1]):
+            loss_v = np.expand_dims(np.dot(x, w[:, c])-y[:, c], axis=0)
+            loss_v = np.where(loss_v >= 0, 1, -1)
+            der[:, c] = np.dot(loss_v, x)
+        return der/w.size
 
 
 class Huber(Loss):
@@ -116,3 +91,25 @@ class Quantile(Loss):
 
     def gradient(self, tx, y, w):
         pass
+
+
+if __name__ == "__main__":
+    w1 = np.zeros((2, 2), dtype=np.double)
+    x = np.array([[1, 2],
+                  [2, 3],
+                  [0, 0],
+                  [-1, -1]], dtype=np.double)
+    y = np.array([[1, 2],
+                  [2, 3],
+                  [0, 0],
+                  [-1, -1]], dtype=np.double)
+    loss = MAE()
+    for i in range(1, 1000000):
+        g1 = loss.gradient(x, y, w1)
+
+        if i % 1000 == 0:
+            print(loss(x, y, w1))
+
+        w1 -= 10**(-5)*g1
+
+    print(w1)
