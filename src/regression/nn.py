@@ -100,6 +100,9 @@ class NeuralNetwork:
             self._back_prop(labels[col, :], lr)
 
     def save(self, path):
+        f = open(path, "w+")
+        f.close()
+
         parameter_file = Path(path)
         if parameter_file.is_file():
             os.remove(path)

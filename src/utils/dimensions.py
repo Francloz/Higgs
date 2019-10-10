@@ -29,7 +29,7 @@ def row(x):
     return x.reshape(1, -1)
 
 
-def assert_dimension(x,y):
+def assert_dimension(x, y):
     """
     Asserts that two vectors exist in the same space.
     :param x: first vector
