@@ -3,6 +3,10 @@ import numpy as np
 from utils.data_manipulation import *
 import time
 
+"""
+This file will be deprecated soon.
+"""
+
 
 class ModelManager:
     def __init__(self, model: Model, directory: str):

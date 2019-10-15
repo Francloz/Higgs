@@ -1,9 +1,15 @@
 from optimization.optimizer import Optimizer
 from utils.data_manipulation import *
 from functions.loss import *
+from model.linear_model import LinearModel
 
 
-class SGD(Optimizer):
+class LinearOptimizer(Optimizer):
+    def __init__(self, model: LinearModel):
+        super().__init__(model)
+
+
+class SGD(LinearOptimizer):
     def __call__(self, tx, y, **kwargs):
         """
         Performs Stochastic Gradient Descent.
@@ -23,7 +29,7 @@ class SGD(Optimizer):
             self.w -= lr * loss.gradient(batch_tx, batch_y, self.w)
 
 
-class GD(Optimizer):
+class GD(LinearOptimizer):
     def __call__(self, tx, y, **kwargs):
         """
         Performs Stochastic Gradient Descent.
@@ -41,7 +47,7 @@ class GD(Optimizer):
             self.w -= lr * loss.gradient(tx, y, self.model.get_w())
 
 
-class Ridge(Optimizer):
+class Ridge(LinearOptimizer):
     def __call__(self, tx, y, **kwargs):
         """
         Performs Ridge regression.
@@ -52,7 +58,7 @@ class Ridge(Optimizer):
         pass
 
 
-class Lasso(Optimizer):
+class Lasso(LinearOptimizer):
     def __call__(self, tx, y, **kwargs):
         """
         Performs Lasso regression.
@@ -63,7 +69,7 @@ class Lasso(Optimizer):
         pass
 
 
-class LS(Optimizer):
+class LS(LinearOptimizer):
     def __call__(self, tx, y, **kwargs):
         """
         Performs Least Squares
@@ -73,7 +79,7 @@ class LS(Optimizer):
         pass
 
 
-class OLS(Optimizer):
+class OLS(LinearOptimizer):
     def __call__(self, tx, y, **kwargs):
         """
         Performs Ordinary Least Squares
@@ -83,6 +89,6 @@ class OLS(Optimizer):
         pass
 
 
-class RegLogistic(Optimizer):
+class RegLogistic(LinearOptimizer):
     def __call__(self, tx, y, **kwargs):
         pass
