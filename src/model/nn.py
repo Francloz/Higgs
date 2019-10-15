@@ -3,6 +3,10 @@ import os
 from pathlib import Path
 from src.utils.scheduler import *
 
+"""
+This file will be deprecated in future commits.
+"""
+
 
 class NeuronLayer:
     def __init__(self, input_size, output_size, activation_function, initial_weights=None, hidden=True):
