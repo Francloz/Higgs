@@ -6,6 +6,10 @@ https://github.com/epfml/ML_course/blob/master/labs/ex02/template/helpers.py
 import numpy as np
 
 
+def separate(dataset, test=.3):
+    pass
+
+
 def load_data(path_dataset):
     return np.loadtxt(open(path_dataset, "rb"), delimiter=",", skiprows=1,
                       converters={1: lambda x: 1 if b"b" in x else 0})

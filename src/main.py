@@ -1,9 +1,9 @@
 from src.regression.nn import *
-from src.utils.activation_functions import *
+from functions.activation_functions import *
 from src.utils.data_manipulation import *
-from src.utils.normalization import *
-from src.utils.loss import *
-from src.utils.distance import *
+from preconditioning.normalization import *
+from functions.loss import *
+from functions.distance import *
 import sys
 import os
 
@@ -39,13 +39,13 @@ if __name__ == "__main__":
     for i in range(len(nns)):
         nns[i].save('./param' + str(i) + '.txt')
 
-    path = os.path.split(os.path.dirname(os.path.abspath(__file__)))[0] + '\\resources\\test.csv'
+    path = os.path.split(os.path.dirname(os.path.abspath(__file__)))[0] + '\\resources\\temp_tests.csv'
     data = load_data(path)
     y = np.expand_dims(data[:, 1], axis=1)
     tx = data[:, 2:]
     tx = normalizer(tx)
 
-    # Now test the data
+    # Now temp_tests the data
     max_tests = int(tx.shape[0]/100)
     i = -1
     loss = MAE()

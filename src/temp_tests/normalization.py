@@ -1,4 +1,4 @@
-from src.utils.normalization import *
+from preconditioning.normalization import *
 
 if __name__ == '__main__':
     normalizer = GaussianNormalizer()

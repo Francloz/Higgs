@@ -1,4 +1,4 @@
-from src.utils.loss import *
+from functions.loss import *
 
 if __name__ == "__main__":
     w1 = np.zeros((2, 2), dtype=np.double)
