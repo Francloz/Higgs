@@ -6,18 +6,24 @@ https://github.com/epfml/ML_course/blob/master/labs/ex02/template/helpers.py
 import numpy as np
 
 
-def load_data(path_dataset):
-    return np.loadtxt(open(path_dataset, "rb"), delimiter=",", skiprows=1,
+def separate(dataset, test=.3):
+    """
+    Separates the dataset into training and testing batches.
+    :param dataset:
+    :param test: relative sizee eof the testing batch
+    :return:
+    """
+    pass
+
+
+def load_dataset(path):
+    """
+    Load dataset from file
+    :param path: path to the file
+    :return: dataset found in the file
+    """
+    return np.loadtxt(open(path, "rb"), delimiter=",", skiprows=1,
                       converters={1: lambda x: 1 if b"b" in x else 0})
-
-
-# def standardize(x):
-#     """Standardize the original data set."""
-#     mean_x = np.mean(x)
-#     x = x - mean_x
-#     std_x = np.std(x)
-#     x = x / std_x
-#     return x, mean_x, std_x
 
 def split(dataset, test_relative_size=.3):
     training_size = int(dataset.shape[0] * (1-test_relative_size))

@@ -1,9 +1,9 @@
-from src.regression.nn import *
-from src.utils.activation_functions import *
+from src.model.nn import *
+from src.functions.activation_functions import *
 from src.utils.data_manipulation import *
-from src.utils.normalization import *
-from src.utils.loss import *
-from src.utils.distance import *
+from src.preconditioning.normalization import *
+from src.functions.loss import *
+from src.functions.distance import *
 import sys
 import os
 

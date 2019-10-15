@@ -1,5 +1,5 @@
-from src.regression.nn import *
-from src.utils.activation_functions import *
+from model.nn import *
+from functions.activation_functions import *
 import sys
 import os
 
