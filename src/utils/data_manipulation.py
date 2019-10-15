@@ -19,6 +19,11 @@ def load_data(path_dataset):
 #     x = x / std_x
 #     return x, mean_x, std_x
 
+def split(dataset, test_relative_size=.3):
+    training_size = int(dataset.shape[0] * (1-test_relative_size))
+    np.random.shuffle(dataset)
+    return dataset[:training_size], dataset[training_size:]
+
 
 def batch_iter(y, tx, batch_size, num_batches=1, shuffle=True):
     """
