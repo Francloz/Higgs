@@ -1,7 +1,7 @@
 from optimization.optimizer import Optimizer
 from utils.data_manipulation import *
 from functions.loss import *
-from model.linear_model import LinearModel
+from model.regression.linear_model import LinearModel
 
 
 class LinearOptimizer(Optimizer):
@@ -86,9 +86,4 @@ class OLS(LinearOptimizer):
         :param tx: sample
         :param y: labels
         """
-        pass
-
-
-class RegLogistic(LinearOptimizer):
-    def __call__(self, tx, y, **kwargs):
         pass
