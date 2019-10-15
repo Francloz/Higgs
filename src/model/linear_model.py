@@ -1,29 +1,50 @@
 from utils.data_manipulation import *
-from functions.loss import MSE
+from functions.loss import *
+from model.model import Model
 
 
-class LinearModel:
-    def __init__(self, shape):
+class LinearModel(Model):
+    def __init__(self, shape: tuple):
+        """
+        Class constructor.
+        :param shape: shape of the weight matrix.
+        """
         self.w = np.zeros(shape)
 
-    def __call__(self, tx):
+    def __call__(self, tx: np.array):
+        """
+        Evalueates the sample.
+        :param tx: sample
+        :return: predictions
+        """
         return np.dot(tx, self.w)
 
-    def set_param(self, w):
+    def set_param(self, w: np.array):
+        """
+        Sets a new the weight matrix.
+        :param w: weight matrix
+        """
         self.w = w
 
-    def load_model(self, path):
+    def load(self, path: str):
+        """
+        Loads the weight matrix from the file.
+        :param path: path to  the file
+        """
         self.w = np.reshape(np.fromfile(path, sep=" ")[:self.w.size], self.w.shape)
 
-    def save_model(self, path):
+    def save_model(self, path: str):
+        """
+        Saves the model to a file.
+        :param path: path to the file
+        """
         f = open(path, "w+")
         np.savetxt(f, self.w)
         f.close()
 
-    def learn(self, tx, y, max_iter=1000, loss=MSE, batch_size=1, lr=0.01):
-        for i in range(max_iter):
-            for batch_y, batch_tx in batch_iter(y, tx, batch_size):
-                self.w -= lr*loss.gradient(batch_tx, batch_y, self.w)
 
-    def evaluate(self, tx, y, loss):
-        return loss(tx, y, self.w)
+    def get_w(self):
+        return self.w
+
+
+

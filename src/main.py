@@ -1,4 +1,4 @@
-from src.regression.nn import *
+from model.nn import *
 from functions.activation_functions import *
 from src.utils.data_manipulation import *
 from preconditioning.normalization import *
@@ -12,7 +12,7 @@ if __name__ == "__main__":
     max_iter = 100
 
     path = os.path.split(os.path.dirname(os.path.abspath(__file__)))[0] + '\\resources\\train.csv'
-    data = load_data(path)
+    data = load_dataset(path)
     y = np.expand_dims(data[:, 1], axis=1)
     tx = data[:, 2:]
     normalizer = GaussianNormalizer()
@@ -40,7 +40,7 @@ if __name__ == "__main__":
         nns[i].save('./param' + str(i) + '.txt')
 
     path = os.path.split(os.path.dirname(os.path.abspath(__file__)))[0] + '\\resources\\temp_tests.csv'
-    data = load_data(path)
+    data = load_dataset(path)
     y = np.expand_dims(data[:, 1], axis=1)
     tx = data[:, 2:]
     tx = normalizer(tx)

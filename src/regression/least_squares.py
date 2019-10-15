@@ -1,12 +1,15 @@
 import numpy as np
 from numpy.linalg import inv
-from src.utils.error import mse
 from src.utils.data_manipulation import batch_iter
 from src.utils.error import *
 from src.utils.scheduler import Scheduler
 
+"""
+This file will be deprecated soon.
+"""
 
-def least_squares_gd(y, tx, initial_w, max_iters, gamma, loss_function=mse, max_error=0):
+
+def least_squares_gd(y, tx, initial_w, max_iters, gamma, loss_function, max_error=0):
     """
     Linear regression using gradient descent.
 
@@ -27,7 +30,7 @@ def least_squares_gd(y, tx, initial_w, max_iters, gamma, loss_function=mse, max_
     return w, loss_function(y, tx*w)
 
 
-def least_squares_sgd(y, tx, initial_w, max_iters, gamma, batch_size=1):
+def least_squares_sgd(y, tx, initial_w, max_iters, gamma, loss, batch_size=1):
     """
     Linear regression using stochastic gradient descent.
 
@@ -43,10 +46,10 @@ def least_squares_sgd(y, tx, initial_w, max_iters, gamma, batch_size=1):
     for it in range(max_iters):
         for yb, txb in batch_iter(y, tx, batch_size=batch_size):
             w = w - (gamma() if isinstance(gamma, Scheduler) else gamma)/yb.size * txb*(yb-txb*w)
-    return w, mse(y, tx*w)
+    return w, loss(y, tx*w)
 
 
-def least_squares_msgd(y, tx, initial_w, max_iters, gamma, momentum=0.1, batch_size=1):
+def least_squares_msgd(y, tx, initial_w, max_iters, loss, gamma, momentum=0.1, batch_size=1):
     """
     Linear regression using stochastic gradient descent with momentum.
 
@@ -66,7 +69,7 @@ def least_squares_msgd(y, tx, initial_w, max_iters, gamma, momentum=0.1, batch_s
             acc_momentum = - (gamma() if isinstance(gamma, Scheduler) else gamma)/yb.size * txb*(yb-txb*w) + \
                            (momentum() if isinstance(momentum, Scheduler) else gamma) * acc_momentum
             w = w - acc_momentum
-    return w, mse(y, tx*w)
+    return w, loss(y, tx*w)
 
 
 def least_squares(y, tx):

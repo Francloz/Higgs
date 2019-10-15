@@ -1,4 +1,4 @@
-from src.regression.nn import *
+from model.nn import *
 from functions.activation_functions import *
 import sys
 import os
