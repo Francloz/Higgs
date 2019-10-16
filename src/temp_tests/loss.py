@@ -15,11 +15,11 @@ if __name__ == "__main__":
                   [0, 0],
                   [-1, -1]], dtype=np.double)
     loss = LogCosh()
-    optimizer = GD(model)
-    optimizer(x, y, lr=0.01, num_batches=100, loss=loss, batch_size=1, epochs=0)
+    optimizer = GD()
+    optimizer(model, x, y, lr=0.01, num_batches=100, loss=loss, batch_size=1, epochs=10000)
     print(model.get_w())
 
     model = NNLayer((2, 2), Identity())
-    optimizer = NNLayerGD(model)
-    optimizer(x, y, lr=0.01, num_batches=100, loss=loss, batch_size=1, epochs=10000)
+    optimizer = NNLayerGD()
+    optimizer(model, x, y, lr=0.01, num_batches=100, loss=loss, batch_size=1, epochs=10000)
     print(model.get_w())

@@ -2,10 +2,7 @@ from model.model import Model
 
 
 class Optimizer:
-    def __init__(self, model: Model):
-        self.model = model
-
-    def __call__(self, tx, y, **kwargs):
+    def __call__(self, model: Model, tx, y, **kwargs):
         """
         Optimizes the model.
         :param tx: sample

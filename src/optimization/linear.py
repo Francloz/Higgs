@@ -1,6 +1,6 @@
 from optimization.optimizer import Optimizer
 from utils.data_manipulation import *
-from functions.loss import *
+from functions.loss import MSE
 from model.regression.linear_model import LinearModel
 
 
@@ -8,16 +8,10 @@ class LinearOptimizer(Optimizer):
     """
     Optimizer of linear models.
     """
-    def __init__(self, model: LinearModel):
-        """
-        Class constructor.
-        :param model: linear model
-        """
-        super().__init__(model)
 
 
 class SGD(LinearOptimizer):
-    def __call__(self, tx, y, **kwargs):
+    def __call__(self, model: LinearModel, tx, y, **kwargs):
         """
         Performs Stochastic Gradient Descent.
         :param tx: sample
@@ -37,17 +31,17 @@ class SGD(LinearOptimizer):
         for epoch in range(epochs):
             running_loss = 0
             for batch_y, batch_tx in batch_iter(y, tx, batch_size, num_batches):
-                loss_grad = loss.gradient(self.model(batch_tx), batch_y)
+                loss_grad = loss.gradient(model(batch_tx), batch_y)
                 x = np.transpose(batch_tx, (1, 0))
-                out = self.model(batch_tx)
+                out = model(batch_tx)
                 running_loss += loss(out, y)
-                self.model.set_param(self.model.get_w() - lr * np.dot(np.transpose(batch_tx, (1, 0)),
-                                                                      loss.gradient(self.model(batch_tx), batch_y)))
+                model.set_param(model.get_w() - lr * np.dot(np.transpose(batch_tx, (1, 0)),
+                                                            loss.gradient(model(batch_tx), batch_y)))
             print(running_loss)
 
 
 class GD(LinearOptimizer):
-    def __call__(self, tx, y, **kwargs):
+    def __call__(self, model: LinearModel, tx, y, **kwargs):
         """
         Performs Stochastic Gradient Descent.
         :param tx: sample
@@ -62,16 +56,16 @@ class GD(LinearOptimizer):
 
         for epoch in range(epochs):
             running_loss = 0
-            loss_grad = loss.gradient(self.model(tx), y)
+            loss_grad = loss.gradient(model(tx), y)
             x = np.transpose(tx, (1, 0))
-            out = self.model(tx)
+            out = model(tx)
             print(loss(out, y))
-            self.model.set_param(self.model.get_w() - lr * np.dot(np.transpose(tx, (1, 0)),
-                                                                  loss.gradient(self.model(tx), y)))
+            model.set_param(model.get_w() - lr * np.dot(np.transpose(tx, (1, 0)),
+                                                        loss.gradient(model(tx), y)))
 
 
 class Ridge(LinearOptimizer):
-    def __call__(self, tx, y, **kwargs):
+    def __call__(self, model: LinearModel, tx, y, **kwargs):
         """
         Performs Ridge regression.
         :param tx: sample
@@ -82,7 +76,7 @@ class Ridge(LinearOptimizer):
 
 
 class Lasso(LinearOptimizer):
-    def __call__(self, tx, y, **kwargs):
+    def __call__(self, model: LinearModel, tx, y, **kwargs):
         """
         Performs Lasso regression.
         :param tx: sample
@@ -93,7 +87,7 @@ class Lasso(LinearOptimizer):
 
 
 class LS(LinearOptimizer):
-    def __call__(self, tx, y, **kwargs):
+    def __call__(self, model: LinearModel, tx, y, **kwargs):
         """
         Performs Least Squares
         :param tx: sample
@@ -103,7 +97,7 @@ class LS(LinearOptimizer):
 
 
 class OLS(LinearOptimizer):
-    def __call__(self, tx, y, **kwargs):
+    def __call__(self, model: LinearModel, tx, y, **kwargs):
         """
         Performs Ordinary Least Squares
         :param tx: sample

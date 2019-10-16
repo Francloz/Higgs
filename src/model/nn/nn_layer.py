@@ -1,6 +1,6 @@
-from functions.loss import *
 from model.model import Model
-from functions.activation_functions import *
+import numpy as np
+from functions.activation_functions import Identity, ActivationFunction
 
 
 class NNLayer(Model):
