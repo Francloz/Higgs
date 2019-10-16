@@ -6,10 +6,6 @@ class Function:
         pass
 
 
-class Derivable:
-    def deriv(self) -> Function:
+class Derivable(Function):
+    def gradient(self, x) -> np.array:
         pass
-
-
-class DerivableFunction(Function, Derivable):
-    pass

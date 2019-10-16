@@ -1,7 +1,11 @@
 from functions.loss import *
+from src.model.regression.linear_model import *
+from src.optimization.linear import *
+from src.optimization.nn_layer import *
+from src.model.nn.nn_layer import *
 
 if __name__ == "__main__":
-    w1 = np.zeros((2, 2), dtype=np.double)
+    model = LinearModel((2, 2))
     x = np.array([[1, 2],
                   [2, 3],
                   [0, 0],
@@ -10,13 +14,12 @@ if __name__ == "__main__":
                   [2, 3],
                   [0, 0],
                   [-1, -1]], dtype=np.double)
-    loss = Huber()
-    for i in range(1, 100000):
-        g1 = loss.gradient(x, y, w1)
+    loss = LogCosh()
+    optimizer = GD(model)
+    optimizer(x, y, lr=0.01, num_batches=100, loss=loss, batch_size=1, epochs=0)
+    print(model.get_w())
 
-        if i % 1000 == 0:
-            print(loss(x, y, w1))
-
-        w1 -= 10**-3*g1
-
-    print(w1)
+    model = NNLayer((2, 2), Identity())
+    optimizer = NNLayerGD(model)
+    optimizer(x, y, lr=0.01, num_batches=100, loss=loss, batch_size=1, epochs=10000)
+    print(model.get_w())

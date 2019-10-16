@@ -26,14 +26,24 @@ class SGD(LinearOptimizer):
         :param num_batches: number of batches to learn
         :param loss: loss function
         :param lr: learning rate
+        :param epoch: number of times to go over the dataset
         """
         batch_size = kwargs['batch_size'] if 'batch_size' in kwargs else 1
-        num_batches = kwargs['num_batches'] if 'num_batches' in kwargs else 1
+        num_batches = min(kwargs['num_batches'], tx.shape[0]) if 'num_batches' in kwargs else 1
         loss = kwargs['loss'] if 'loss' in kwargs else MSE()
         lr = kwargs['lr'] if 'lr' in kwargs else .01
+        epochs = kwargs['epochs'] if 'epochs' in kwargs else 100
 
-        for batch_y, batch_tx in batch_iter(y, tx, batch_size, num_batches):
-            self.w -= lr * loss.gradient(batch_tx, batch_y, self.w)
+        for epoch in range(epochs):
+            running_loss = 0
+            for batch_y, batch_tx in batch_iter(y, tx, batch_size, num_batches):
+                loss_grad = loss.gradient(self.model(batch_tx), batch_y)
+                x = np.transpose(batch_tx, (1, 0))
+                out = self.model(batch_tx)
+                running_loss += loss(out, y)
+                self.model.set_param(self.model.get_w() - lr * np.dot(np.transpose(batch_tx, (1, 0)),
+                                                                      loss.gradient(self.model(batch_tx), batch_y)))
+            print(running_loss)
 
 
 class GD(LinearOptimizer):
@@ -46,12 +56,18 @@ class GD(LinearOptimizer):
         :param loss: loss function
         :param lr: learning rate
         """
-        max_iter = kwargs['max_iter'] if 'max_iter' in kwargs else 1
         loss = kwargs['loss'] if 'loss' in kwargs else MSE()
         lr = kwargs['lr'] if 'lr' in kwargs else .01
+        epochs = kwargs['epochs'] if 'epochs' in kwargs else 100
 
-        for i in range(max_iter):
-            self.w -= lr * loss.gradient(tx, y, self.model.get_w())
+        for epoch in range(epochs):
+            running_loss = 0
+            loss_grad = loss.gradient(self.model(tx), y)
+            x = np.transpose(tx, (1, 0))
+            out = self.model(tx)
+            print(loss(out, y))
+            self.model.set_param(self.model.get_w() - lr * np.dot(np.transpose(tx, (1, 0)),
+                                                                  loss.gradient(self.model(tx), y)))
 
 
 class Ridge(LinearOptimizer):

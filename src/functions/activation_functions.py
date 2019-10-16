@@ -1,16 +1,11 @@
 import numpy as np
-from src.functions.function import DerivableFunction
+from src.functions.function import Derivable
 
 
-class ActivationFunction(DerivableFunction):
+class ActivationFunction(Derivable):
     """
     Base class of an activation function.
     """
-    def __call__(self, inputs):
-        pass
-
-    def derivative(self):
-        pass
 
 
 class Sigmoid(ActivationFunction):
@@ -22,7 +17,7 @@ class Sigmoid(ActivationFunction):
     def __call__(self, x):
         return (np.ones(x.shape) + np.exp(-x))**-1
 
-    def derivative(self, x):
+    def gradient(self, x):
         return self(x)*(1-self(x))
 
 
@@ -35,7 +30,7 @@ class Identity(ActivationFunction):
     def __call__(self, x):
         return x
 
-    def derivative(self, x):
+    def gradient(self, x):
         return 1
 
 
@@ -49,7 +44,7 @@ class ReLU(ActivationFunction):
     def __call__(self, x):
         return np.where(x > 0, x, 0)
 
-    def derivative(self, x):
+    def gradient(self, x):
         return np.where(x > 0, 1, 0)
 
 
@@ -66,7 +61,7 @@ class LeakyReLU(ActivationFunction):
     def __call__(self, x):
         return np.where(x > 0, x, x*self.gamma)
 
-    def derivative(self, x):
+    def gradient(self, x):
         return np.where(x > 0, 1, self.gamma)
 
 
@@ -79,7 +74,7 @@ class Tanh(ActivationFunction):
     def __call__(self, x):
         return np.tanh(x)
 
-    def derivative(self, x):
+    def gradient(self, x):
         return 1 - np.tanh(x)**2
 
 
@@ -97,7 +92,7 @@ class HardTanh(ActivationFunction):
         x = np.where(x < self.min, self.min, x)
         return np.where(x > self.max, self.max, x)
 
-    def derivative(self, x):
+    def gradient(self, x):
         x = np.where(x < self.min, 0, x)
         return np.where(x > self.max, 0, x)
 
@@ -125,7 +120,7 @@ class BipolarSigmoid(ActivationFunction):
     def __call__(self, x):
         return ((self.a-self.b) / (1 + np.exp(self.c/2-x)**self.d)) + self.b
 
-    def derivative(self, x):
+    def gradient(self, x):
         return (-(self.a-self.b) * (1 + np.exp(self.c/2-x)**self.d)**-2)*np.exp(self.c/2-x)**self.d * self.d
 
 
@@ -139,7 +134,7 @@ class SoftPlus(ActivationFunction):
     def __call__(self, x):
         return np.log(np.ones(x.shape) + np.exp(-x))
 
-    def derivative(self, x):
+    def gradient(self, x):
         return (np.ones(x.shape) + np.exp(-x))**-1
 
 
@@ -160,5 +155,5 @@ class ExpLinear(ActivationFunction):
     def __call__(self, x):
         return np.where(x < 0, self.gamma*(np.exp(x) - 1), x)
 
-    def derivative(self, x):
+    def gradient(self, x):
         return np.where(x < 0, self.gamma*np.exp(x), 1)
