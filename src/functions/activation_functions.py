@@ -1,14 +1,15 @@
 import numpy as np
+from src.functions.function import DerivableFunction
 
 
-class ActivationFunction:
+class ActivationFunction(DerivableFunction):
     """
     Base class of an activation function.
     """
     def __call__(self, inputs):
         pass
 
-    def derivative(self, x):
+    def derivative(self):
         pass
 
 

@@ -1,14 +1,16 @@
 from functions.loss import *
 from model.model import Model
+from functions.activation_functions import *
 
 
-class LinearModel(Model):
-    def __init__(self, shape: tuple):
+class NNLayer(Model):
+    def __init__(self, shape: tuple, activation_function: ActivationFunction = Identity()):
         """
         Class constructor.
         :param shape: shape of the weight matrix.
         """
         self.w = np.zeros(shape)
+        self.activation = activation_function
 
     def __call__(self, tx: np.array):
         """
@@ -16,7 +18,7 @@ class LinearModel(Model):
         :param tx: sample
         :return: predictions
         """
-        return np.dot(tx, self.w)
+        return self.activation(np.dot(tx, self.w))
 
     def set_param(self, w: np.array):
         """
@@ -44,5 +46,6 @@ class LinearModel(Model):
     def get_w(self):
         return self.w
 
-
+    def get_activation_function(self) -> ActivationFunction:
+        return self.activation
 

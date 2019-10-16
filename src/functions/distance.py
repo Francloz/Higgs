@@ -1,32 +1,39 @@
 import numpy as np
 
 
-def euclidean_distance(x, y):
-    """
-    Computes the euclidean distance between two points.
-    :param x: first point
-    :param y: second point
-    :return: euclidean distance between the points
-    """
-    return np.sqrt(np.sum(np.abs(x-y)**2))
+class Distance:
+    def __call__(self, x: np.array, y: np.array):
+        pass
 
 
-def l1_distance(x, y):
-    """
-    Computes the absolute distance between two points.
-    :param x: first point
-    :param y: second point
-    :return: absolute distance between the points
-    """
-    return np.sum(np.abs(x - y))
+class Square(Distance):
+    def __call__(self, x: np.array, y: np.array):
+        """
+        Computes the square distance between two points.
+        :param x: first point
+        :param y: second point
+        :return: absolute distance between the points
+        """
+        np.sum((x - np.reshape(y, x.shape))**2)
 
 
-def lp_distance(x, y, p):
-    """
-    Computes the absolute distance between two points.
-    :param x: first point
-    :param y: second point
-    :param p: factor
-    :return: absolute distance between the points
-    """
-    return np.sum(np.abs(x-y)**p)**(1/p)
+class L2(Distance):
+    def __call__(self, x: np.array, y: np.array):
+        """
+        Computes the L2 distance between two points.
+        :param x: first point
+        :param y: second point
+        :return: absolute distance between the points
+        """
+        np.sqrt(np.sum((x - np.reshape(y, x.shape))**2))
+
+
+class L1(Distance):
+    def __call__(self, x: np.array, y: np.array):
+        """
+        Computes the absolute distance between two points.
+        :param x: first point
+        :param y: second point
+        :return: absolute distance between the points
+        """
+        np.sqrt(np.sum(np.abs(x - np.reshape(y, x.shape))))

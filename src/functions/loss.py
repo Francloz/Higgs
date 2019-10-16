@@ -1,7 +1,8 @@
 import numpy as np
+from src.functions.function import *
 
 
-class Loss:
+class Loss(Derivable):
     """
     Generic loss function template.
 
@@ -9,10 +10,10 @@ class Loss:
     x = matrix of dim b x n
     y = matrix of dim b x k
     """
-    def __call__(self, x, y, w):
+    def __call__(self, x, y, f: Function):
         pass
 
-    def gradient(self, x, y, w):
+    def gradient(self, x, y, f: Derivable):
         pass
 
 
@@ -20,36 +21,36 @@ class MSE(Loss):
     """
     Generic MSE loss
     """
-    def __call__(self, x, y, w):
+    def __call__(self, x, y, f: Function):
         """
         Computes the loss of the regression.
 
         :param x: input matrix of dim b x n
         :param y: label matrix of dim b x k
-        :param w: weight matrix dim n x k
+        :param f: function
         :return: loss value
         """
-        return np.mean((np.dot(x, w) - y)**2)
+        return np.mean((f(x) - y)**2)
 
-    def gradient(self, x, y, w):
+    def gradient(self, x, y, f: DerivableFunction):
         """
         Computes the gradient of the weight matrix.
         :param x: input matrix of dim b x n
         :param y: label matrix of dim b x k
-        :param w: weight matrix dim n x k
+        :param f: function
         :return: gradient matrix
         """
         # for c in range(w.shape[1]):
         #    loss_v = np.expand_dims(np.dot(x, w[:, c])-y[:, c], axis=0)
         #    der[:, c] = np.dot(loss_v, x)
 
-        error = np.dot(x, w) - y
-        aux_der = np.dot(np.transpose(x, (1, 0)), error)
-        return aux_der
+        error = f(x) - y
+        aux_der = np.dot(error, f.deriv()(x))
+        return aux_der/y.shape[0]
 
 
 class MAE(Loss):
-    def __call__(self, x, y, w):
+    def __call__(self, x, y, f: Function):
         """
         Computes the loss of the regression.
 
@@ -58,9 +59,9 @@ class MAE(Loss):
         :param w: weight matrix dim n x k
         :return: loss value
         """
-        return np.mean(np.abs(np.dot(x, w) - y))
+        return np.mean(np.abs(f(x) - y))
 
-    def gradient(self, x, y, w):
+    def gradient(self, x, y, f: DerivableFunction):
         """
         Computes the gradient of the weight matrix.
         :param x: input matrix of dim b x n
@@ -68,9 +69,9 @@ class MAE(Loss):
         :param w: weight matrix dim n x k
         :return: gradient matrix
         """
-        error = np.dot(x, w)-y
+        error = f(x) - y
         error = np.where(error >= 0, 1, -1)
-        derivative = np.dot(np.transpose(x, (1, 0)), error)
+        derivative = error * f.deriv()(error)np.dot(np.transpose(x, (1, 0)), error)
         return derivative/w.size
 
 
