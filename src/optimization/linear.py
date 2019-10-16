@@ -5,7 +5,14 @@ from model.regression.linear_model import LinearModel
 
 
 class LinearOptimizer(Optimizer):
+    """
+    Optimizer of linear models.
+    """
     def __init__(self, model: LinearModel):
+        """
+        Class constructor.
+        :param model: linear model
+        """
         super().__init__(model)
 
 
