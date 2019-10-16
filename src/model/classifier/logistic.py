@@ -1,7 +1,5 @@
-from model.classifier.classifier import Classifier
-from model.nn_layer import NNLayer
+from model.nn.nn_layer import NNLayer
 from src.functions.activation_functions import Sigmoid
-import numpy as np
 
 
 class Logistic(NNLayer):

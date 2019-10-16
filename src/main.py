@@ -1,4 +1,4 @@
-from model.nn import *
+from model.nn.nn import *
 from functions.activation_functions import *
 from src.utils.data_manipulation import *
 from preconditioning.normalization import *

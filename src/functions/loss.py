@@ -1,19 +1,18 @@
 import numpy as np
-from src.functions.function import *
+from src.functions.function import Derivable
 
 
-class Loss(Derivable):
+class Loss:
     """
     Generic loss function template.
 
-    W = matrix dim n x k
-    x = matrix of dim b x n
-    y = matrix of dim b x k
+    :param x: output matrix of dim b x k
+    :param y: label matrix of dim b x k
     """
-    def __call__(self, x, y, f: Function):
+    def __call__(self, x, y):
         pass
 
-    def gradient(self, x, y, f: Derivable):
+    def gradient(self, x, y):
         pass
 
 
@@ -21,84 +20,67 @@ class MSE(Loss):
     """
     Generic MSE loss
     """
-    def __call__(self, x, y, f: Function):
+    def __call__(self, x, y):
         """
         Computes the loss of the regression.
-
-        :param x: input matrix of dim b x n
+        :param x: output matrix of dim b x k
         :param y: label matrix of dim b x k
-        :param f: function
         :return: loss value
         """
-        return np.mean((f(x) - y)**2)
+        return np.mean((x - y)**2)
 
-    def gradient(self, x, y, f: DerivableFunction):
+    def gradient(self, x, y):
         """
         Computes the gradient of the weight matrix.
-        :param x: input matrix of dim b x n
+        :param x: output matrix of dim b x k
         :param y: label matrix of dim b x k
-        :param f: function
         :return: gradient matrix
         """
-        # for c in range(w.shape[1]):
-        #    loss_v = np.expand_dims(np.dot(x, w[:, c])-y[:, c], axis=0)
-        #    der[:, c] = np.dot(loss_v, x)
-
-        error = f(x) - y
-        aux_der = np.dot(error, f.deriv()(x))
-        return aux_der/y.shape[0]
+        return x - y
 
 
 class MAE(Loss):
-    def __call__(self, x, y, f: Function):
+    def __call__(self, x, y):
         """
         Computes the loss of the regression.
-
-        :param x: input matrix of dim b x n
+        :param x: input matrix of dim b x k
         :param y: label matrix of dim b x k
-        :param w: weight matrix dim n x k
         :return: loss value
         """
-        return np.mean(np.abs(f(x) - y))
+        return np.mean(np.abs(x - y))
 
-    def gradient(self, x, y, f: DerivableFunction):
+    def gradient(self, x, y):
         """
         Computes the gradient of the weight matrix.
-        :param x: input matrix of dim b x n
+        :param x: output matrix of dim b x k
         :param y: label matrix of dim b x k
-        :param w: weight matrix dim n x k
         :return: gradient matrix
         """
-        error = f(x) - y
+        error = x-y
         error = np.where(error >= 0, 1, -1)
-        derivative = error * f.deriv()(error)np.dot(np.transpose(x, (1, 0)), error)
-        return derivative/w.size
+        return error/y.shape[0]
 
 
 class LogCosh(Loss):
-    def __call__(self, x, y, w):
+    def __call__(self, x, y):
         """
-        Computes the loss of the regression.
-
-        :param x: input matrix of dim b x n
+        Computes the loss.
+        :param x: output matrix of dim b x k
         :param y: label matrix of dim b x k
-        :param w: weight matrix dim n x k
-        :return: loss value
-        """
-        return np.sum(np.log(np.cosh(np.dot(x, w)-y)))
-
-    def gradient(self, x, y, w):
-        """
-        Computes the gradient of the weight matrix.
-        :param x: input matrix of dim b x n
-        :param y: label matrix of dim b x k
-        :param w: weight matrix dim n x k
         :return: gradient matrix
         """
-        error = np.dot(x, w) - y
+        return np.sum(np.log(np.cosh(x-y)))
+
+    def gradient(self, x, y):
+        """
+        Computes the gradient.
+        :param x: output matrix of dim b x k
+        :param y: label matrix of dim b x k
+        :return: gradient matrix
+        """
+        error = x - y
         error = np.sinh(error)/np.cosh(error)
-        aux_der = np.dot(np.transpose(x, (1, 0)), error)
-        return aux_der / w.size
+        return error / y.shape[0]
 
 
 class Quantile(Loss):
@@ -109,32 +91,29 @@ class Quantile(Loss):
         """
         self.gamma = gamma
 
-    def __call__(self, x, y, w):
+    def __call__(self, x, y):
         """
         Computes the loss of the regression.
 
-        :param x: input matrix of dim b x n
+        :param x: output matrix of dim b x k
         :param y: label matrix of dim b x k
-        :param w: weight matrix dim n x k
         :return: loss value
         """
-        error = np.dot(x, w)-y
+        error = x-y
         return np.sum(np.where(error < 0,
                                (self.gamma-1) * np.abs(error),
                                self.gamma * np.abs(error)))
 
-    def gradient(self, x, y, w):
+    def gradient(self, x, y):
         """
         Computes the gradient of the weight matrix.
-        :param x: input matrix of dim b x n
+        :param x: input matrix of dim b x k
         :param y: label matrix of dim b x k
-        :param w: weight matrix dim n x k
         :return: gradient matrix
         """
-        error = np.dot(x, w) - y
+        error = x - y
         error = np.where(error >= 0, self.gamma, -(1 - self.gamma))
-        derivative = np.dot(np.transpose(x, (1, 0)), error)
-        return derivative / w.size
+        return error / y.shape[0]
 
 
 class Huber(Loss):
@@ -146,66 +125,30 @@ class Huber(Loss):
 
         self.delta = delta
 
-    def __call__(self, x, y, w):
+    def __call__(self, x, y):
         """
         Computes the loss of the regression.
 
-        :param x: input matrix of dim b x n
+        :param x: output matrix of dim b x k
         :param y: label matrix of dim b x k
-        :param w: weight matrix dim n x k
         :return: loss value
         """
-        output = np.dot(x, w)
-        return np.sum(np.where(np.abs(output - y) < self.delta,
-                               0.5 * ((output - y) ** 2),
-                               self.delta * np.abs(output - y) - 0.5 * (self.delta ** 2)))
+        return np.sum(np.where(np.abs(x - y) < self.delta,
+                               0.5 * ((x - y) ** 2),
+                               self.delta * np.abs(x - y) - 0.5 * (self.delta ** 2)))
 
-    def gradient(self, x, y, w):
+    def gradient(self, x, y):
         """
         Computes the gradient of the weight matrix.
-        :param x: input matrix of dim b x n
+        :param x: input matrix of dim b x k
         :param y: label matrix of dim b x k
-        :param w: weight matrix dim n x k
         :return: gradient matrix
         """
-        error = np.dot(x, w) - y
+        error = x - y
         aux_abs = np.where(error >= 0, 1, -1)
 
         error = np.where(np.abs(error) < self.delta,
                          error,
                          self.delta * aux_abs)
+        return error / y.shape[0]
 
-        derivative = np.dot(np.transpose(x, (1, 0)), error)
-        return derivative / w.size
-
-
-class MSE(Loss):
-    """
-    Generic MSE loss
-    """
-    def __call__(self, x, y, w):
-        """
-        Computes the loss of the regression.
-
-        :param x: input matrix of dim b x n
-        :param y: label matrix of dim b x k
-        :param w: weight matrix dim n x k
-        :return: loss value
-        """
-        return np.mean((np.dot(x, w) - y)**2)
-
-    def gradient(self, x, y, w):
-        """
-        Computes the gradient of the weight matrix.
-        :param x: input matrix of dim b x n
-        :param y: label matrix of dim b x k
-        :param w: weight matrix dim n x k
-        :return: gradient matrix
-        """
-        # for c in range(w.shape[1]):
-        #    loss_v = np.expand_dims(np.dot(x, w[:, c])-y[:, c], axis=0)
-        #    der[:, c] = np.dot(loss_v, x)
-
-        error = np.dot(x, w) - y
-        aux_der = np.dot(np.transpose(x, (1, 0)), error)
-        return aux_der
