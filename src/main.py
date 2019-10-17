@@ -3,7 +3,7 @@ from functions.activation_functions import *
 from src.utils.data_manipulation import *
 from preconditioning.normalization import *
 from functions.loss import *
-from functions.distance import *
+from functions.distance import L2
 import sys
 import os
 
@@ -56,7 +56,7 @@ if __name__ == "__main__":
         for row in range(max_tests):
             sys.stdout.write("\rEvaluating NN " + str(i) + ": %0.2f%%" % float(i/max_tests*100))
             prediction = nn(tx[row, :])
-            running_loss += euclidean_distance(np.where(prediction < .5, 0, 1), y[row, :])
+            running_loss += L2()(np.where(prediction < .5, 0, 1), y[row, :])
         sys.stdout.write("\rError of NN " + str(i) + " is: ")
         print("%0.1f%%" % float(running_loss/max_tests * 100))
 

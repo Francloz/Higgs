@@ -10,7 +10,7 @@ class LinearOptimizer(Optimizer):
     """
 
 
-class SGD(LinearOptimizer):
+class LinearSGD(LinearOptimizer):
     def __call__(self, model: LinearModel, tx, y, **kwargs):
         """
         Performs Stochastic Gradient Descent.
@@ -40,7 +40,7 @@ class SGD(LinearOptimizer):
             print(running_loss)
 
 
-class GD(LinearOptimizer):
+class LinearGD(LinearOptimizer):
     def __call__(self, model: LinearModel, tx, y, **kwargs):
         """
         Performs Stochastic Gradient Descent.
