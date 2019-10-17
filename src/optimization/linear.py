@@ -65,14 +65,16 @@ class GD(LinearOptimizer):
 
 
 class Ridge(LinearOptimizer):
-    def __call__(self, model: LinearModel, tx, y, **kwargs):
+    def __call__(self, model: LinearModel, tx,  y,lambda_, **kwargs):
         """
         Performs Ridge regression.
         :param tx: sample
         :param y: labels
         :param lambda_: ridge hyper-parameter
         """
-        pass
+        #w=(XT*X+lambda*I)^-1*XT*y
+        w = np.linalg.inv(np.transpose(tx)@tx + lambda_*np.eye(tx.shape[0],tx.shape[1])) @np.transpose(tx) @y
+        model.set_param(w)
 
 
 class Lasso(LinearOptimizer):
@@ -93,7 +95,8 @@ class LS(LinearOptimizer):
         :param tx: sample
         :param y: labels
         """
-        pass
+        w=np.linalg.inv(tx.transpose()@tx)@tx.transpose()@y
+        model.set_param(w)
 
 
 class OLS(LinearOptimizer):

@@ -1,4 +1,4 @@
-from functions.loss import *
+from src.functions.loss import *
 from src.model.regression.linear_model import *
 from src.optimization.linear import *
 from src.optimization.nn_layer import *
