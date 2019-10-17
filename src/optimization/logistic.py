@@ -14,9 +14,7 @@ class LogisticGD(NNLayerGD):
         loss = kwargs['loss'] if 'loss' in kwargs else MSE()
         lr = kwargs['lr'] if 'lr' in kwargs else .01
         epochs = kwargs['epochs'] if 'epochs' in kwargs else 1000
-        new_tx = np.ones((tx.shape[0], tx.shape[1] + 1))
-        new_tx[:, :-1] = tx
-        super().__call__(model, new_tx, y, loss=loss, lr=lr, epochs=epochs)
+        super().__call__(model, tx, y, loss=loss, lr=lr, epochs=epochs)
 
 
 class LogisticSGD(NNLayerSGD):
@@ -36,7 +34,5 @@ class LogisticSGD(NNLayerSGD):
         loss = kwargs['loss'] if 'loss' in kwargs else MSE()
         lr = kwargs['lr'] if 'lr' in kwargs else .01
         epochs = kwargs['epochs'] if 'epochs' in kwargs else 100
-        new_tx = np.ones((tx.shape[0], tx.shape[1] + 1))
-        new_tx[:, :-1] = tx
-        super().__call__(model, new_tx, y, batch_size=batch_size, num_batches=num_batches,
+        super().__call__(model, tx, y, batch_size=batch_size, num_batches=num_batches,
                          loss=loss, epochs=epochs, lr=lr)

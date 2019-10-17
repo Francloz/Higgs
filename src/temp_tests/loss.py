@@ -33,14 +33,17 @@ if __name__ == "__main__":
     :param c: end_slope
     :param d: slope
     """
-    model = Logistic(2, Sigmoid())
+    model = Logistic(3, Sigmoid())
     model.set_param(np.ones((3, 1)))
     x = np.array([[1, 1],
                   [1, 0],
                   [0, 1],
                   [0, 0]], dtype=np.double)
-    y = np.array([[.9],
-                  [.1],
-                  [.1],
+    y = np.array([[.1],
+                  [.9],
+                  [.9],
                   [.1]], dtype=np.double)
-    optimizer(model, x, y, lr=0.01, num_batches=100, loss=loss, batch_size=1, epochs=100000)
+    new_tx = np.ones((x.shape[0], x.shape[1] + 1))
+    new_tx[:, :-1] = x
+    optimizer(model, new_tx, y, lr=0.01, num_batches=100, loss=loss, batch_size=1, epochs=10000)
+    print(model(new_tx))
