@@ -14,7 +14,7 @@ class Square(Distance):
         :param y: second point
         :return: absolute distance between the points
         """
-        np.sum((x - np.reshape(y, x.shape))**2)
+        return np.sum((x - np.reshape(y, x.shape))**2)
 
 
 class L2(Distance):
@@ -25,7 +25,7 @@ class L2(Distance):
         :param y: second point
         :return: absolute distance between the points
         """
-        np.sqrt(np.sum((x - np.reshape(y, x.shape))**2))
+        return np.sqrt(np.sum((x - np.reshape(y, x.shape))**2))
 
 
 class L1(Distance):
@@ -36,4 +36,4 @@ class L1(Distance):
         :param y: second point
         :return: absolute distance between the points
         """
-        np.sqrt(np.sum(np.abs(x - np.reshape(y, x.shape))))
+        return np.sqrt(np.sum(np.abs(x - np.reshape(y, x.shape))))

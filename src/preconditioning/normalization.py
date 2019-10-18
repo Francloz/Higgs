@@ -44,7 +44,7 @@ class DecimalScaling(Normalizer):
         :param data: original data
         :return: normalized data
         """
-        if not self.power:
+        if self.power is None:
             self.power = np.round(np.log10(np.max(data, axis=0)))
             self.power = np.expand_dims(np.power(10*np.ones(self.power.shape), self.power), axis=1)
         return data / np.reshape(np.multiply(np.ones(data.shape),
@@ -61,7 +61,7 @@ class MinMaxNormalizer(Normalizer):
         :param data: original data
         :return: normalized data
         """
-        if not self.min_max:
+        if self.min_max is None:
             self.min_max = np.expand_dims(np.max(data, axis=0) - np.min(data, axis=0), axis=1)
         return data / np.reshape(np.multiply(np.ones(data.shape),
                                              np.transpose(self.min_max, (1, 0))[:, np.newaxis]), newshape=data.shape)
