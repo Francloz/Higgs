@@ -1,7 +1,7 @@
-from optimization.optimizer import Optimizer
-from utils.data_manipulation import *
-from functions.loss import MSE
-from model.regression.linear_model import LinearModel
+from src.optimization.optimizer import Optimizer
+from src.utils.data_manipulation import *
+from src.functions.loss import MSE
+from src.model.regression.linear_model import LinearModel
 
 
 class LinearOptimizer(Optimizer):

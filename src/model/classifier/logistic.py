@@ -1,4 +1,4 @@
-from model.nn.nn_layer import NNLayer
+from src.model.nn.nn_layer import NNLayer
 from src.functions.activation_functions import Sigmoid
 import numpy as np
 
