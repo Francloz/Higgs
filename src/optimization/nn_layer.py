@@ -1,4 +1,4 @@
-from model.nn.nn_layer import NNLayer
+from src.model.nn.nn_layer import NNLayer
 from src.optimization.optimizer import Optimizer
 from src.functions.loss import MSE
 import numpy as np

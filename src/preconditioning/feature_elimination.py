@@ -2,12 +2,7 @@ import numpy as np
 from src.preconditioning.normalization import MinMaxNormalizer
 
 
-class DimensionReduction:
-    def __call__(self, x):
-        pass
-
-
-class VarianceThreshold(DimensionReduction):
+class VarianceThreshold:
     def __init__(self, x, **kwargs):
         x = MinMaxNormalizer()(x)
         self.threshold = kwargs['threshold'] if 'threshold' in kwargs else 0.01
@@ -22,7 +17,7 @@ class VarianceThreshold(DimensionReduction):
         return x[:, self.idx.flatten()]
 
 
-class CorrelationThreshold(DimensionReduction):
+class CorrelationThreshold:
     def __init__(self, x, **kwargs):
         x = MinMaxNormalizer()(x)
         self.threshold = kwargs['threshold'] if 'threshold' in kwargs else 0.95

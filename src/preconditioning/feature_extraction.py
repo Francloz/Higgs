@@ -3,14 +3,6 @@ from src.functions.distance import Square
 from src.preconditioning.normalization import MinMaxNormalizer
 
 
-class FeatureExtraction:
-    def __init__(self, x, **kwargs):
-        pass
-
-    def __call__(self, x, **kwargs):
-        pass
-
-
 class LDA:
     """
     This has been heavily influenced by the following article:
@@ -26,17 +18,23 @@ class LDA:
 
         mean_1 = np.mean(x[idx], axis=0)
         mean_2 = np.mean(x[~idx], axis=0)
+
         c1 = x[idx]
         c2 = x[~idx]
+
         s_w = np.zeros((x.shape[1], x.shape[1]))
-        for i in range(c1.shape[0]):
-            s_w += np.dot(np.reshape(c1[i]-mean_1, (-1, 1)), np.reshape(c1[i]-mean_1, (1, -1)))
-        for i in range(c2.shape[0]):
-            s_w += np.dot(np.reshape(c2[i]-mean_1, (-1, 1)), np.reshape(c2[i]-mean_1, (1, -1)))
+        for row in c1:
+            distance = np.reshape(row-mean_1, (-1, 1))
+            s_w += distance.dot(distance.T)
+        for row in c2:
+            distance = np.reshape(row-mean_1, (-1, 1))
+            s_w += distance.dot(distance.T)
 
         mean = np.mean(x, axis=0)
-        s_b = np.dot(np.reshape(mean-mean_1, (-1, 1)), np.reshape(mean-mean_1, (1, -1)))
-        s_b += np.dot(np.reshape(mean-mean_2, (-1, 1)), np.reshape(mean-mean_2, (1, -1)))
+        distance = np.reshape(mean_1-mean, (-1, 1))
+        s_b = x[idx].shape[0]*distance.dot(distance.T)
+        distance = np.reshape(mean_1-mean, (-1, 1))
+        s_b += x[~idx].shape[0]*distance.dot(distance.T)
 
         eig_vals, eig_vecs = np.linalg.eig(np.linalg.inv(s_w).dot(s_b))
         # Make a list of (eigenvalue, eigenvector) tuples
@@ -48,10 +46,10 @@ class LDA:
         for i in eig_pairs:
             print(i[0])
 
-        print('Variance explained:\n')
+        print('Variance explained per eigenvalue:\n')
         eigv_sum = sum(eig_vals)
         for i,j in enumerate(eig_pairs):
-            print('eigenvalue {0:}: {1:.10%}'.format(i+1, (j[0]/eigv_sum).real))
+            print('{0:}: {1:.10%}'.format(i+1, (j[0]/eigv_sum).real))
 
         self.w = np.reshape(eig_pairs[0][1], (-1, 1))
         i = 1
@@ -62,10 +60,6 @@ class LDA:
 
     def __call__(self, x):
         return np.dot(x, self.w)
-
-
-class PCA:
-    pass
 
 
 def comp_mean_vectors(X, y):
@@ -122,6 +116,8 @@ if __name__ == "__main__":
     labels = data[:, 1]
     X = data[:, 2:]
 
+
+
     # Her's
     S_W, S_B = scatter_within(X, labels), scatter_between(X, labels)
     eig_vals, eig_vecs = np.linalg.eig(np.linalg.inv(S_W).dot(S_B))
@@ -130,19 +126,34 @@ if __name__ == "__main__":
     print('\nW: %s' % W)
     X_lda = X.dot(W)
 
-    # Mine
-    # X_lda = LDA(X, labels)(X)
-
     fig = plt.figure()
     ax = fig.add_subplot(111, projection='3d')
-    for label, marker, color in zip(
-            (0, 1), ('^', 's', 'o'),('blue', 'red', 'green')):
-        ax.scatter(X_lda[labels == label, 0][:1000],
-                   X_lda[labels == label, 1][:1000],
-                   X_lda[labels == label, 2][:1000],
+    n_pts = int(500)
+    for label, marker, color in zip((0, 1), ('^', 'o'), ('blue', 'red')):
+        r = int(np.random.uniform(0, X_lda[labels == label].shape[0]-n_pts-1))
+        ax.scatter(X_lda[labels == label, 0][r:r+n_pts],
+                   X_lda[labels == label, 1][r:r+n_pts],
+                   X_lda[labels == label, 2][r:r+n_pts],
                    marker=marker)
-
     ax.set_xlabel('X Label')
     ax.set_ylabel('Y Label')
     ax.set_zlabel('Z Label')
     plt.show()
+
+    # Mine
+    X_lda = LDA(X, labels)(X)
+
+    fig = plt.figure()
+    ax = fig.add_subplot(111, projection='3d')
+    n_pts = int(500)
+    for label, marker, color in zip((0, 1), ('^', 'o'), ('blue', 'red')):
+        r = int(np.random.uniform(0, X_lda[labels == label].shape[0]-n_pts-1))
+        ax.scatter(X_lda[labels == label, 0][r:r+n_pts],
+                   X_lda[labels == label, 1][r:r+n_pts],
+                   X_lda[labels == label, 2][r:r+n_pts],
+                   marker=marker)
+    ax.set_xlabel('X Label')
+    ax.set_ylabel('Y Label')
+    ax.set_zlabel('Z Label')
+    plt.show()
+    pass
