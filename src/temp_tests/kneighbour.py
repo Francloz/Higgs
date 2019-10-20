@@ -4,6 +4,7 @@ from src.functions.activation_functions import *
 from src.preconditioning.normalization import *
 from src.functions.distance import L2
 from src.utils.data_manipulation import *
+from src.preconditioning.feature_extraction import LDA
 import os
 
 
@@ -15,16 +16,17 @@ if __name__ == "__main__":
     y = np.expand_dims(train[:, 1], axis=1)
     tx = train[:, 2:]
     normalizer = GaussianNormalizer()
-    tx = normalizer(tx)
+    fe = LDA(tx, y)
+    tx = fe(normalizer(tx))
     running_loss = 0
-    batch_size = 100
+    batch_size = 1000
     max_batches = 5
-    for k in range(10, 200, 5):
+    for k in range(1, 200, 2):
         model = KNeighbourhoodCluster(x=tx, y=y, distance=L1(), k=k)
         running_loss = 0
         iter = int(min(test.shape[0]/batch_size+.5, max_batches))
         for i in range(iter):
-            prediction = np.reshape(model(normalizer(test[i*batch_size:(i+1)*batch_size, 2:])), (-1, 1))
+            prediction = np.reshape(model(fe(normalizer(test[i*batch_size:(i+1)*batch_size, 2:]))), (-1, 1))
             label = np.reshape(np.array(test[i*batch_size:(i+1)*batch_size, 1]), (-1, 1))
             running_loss += np.sum(L2()(prediction, label))
         print("For k=%d error=%f" % (k, running_loss/(iter*batch_size)))

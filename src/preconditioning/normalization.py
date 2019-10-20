@@ -26,9 +26,9 @@ class GaussianNormalizer(Normalizer):
             diff = data - np.reshape(np.multiply(np.ones(data.shape),
                                                  np.transpose(self.means, (1, 0))[:, np.newaxis]), newshape=data.shape)
         else:
-            self.means = np.expand_dims(np.sum(data, axis=0)/data.shape[0], axis=1)
+            self.means = np.mean(data, axis=0)
             diff = data - np.reshape(np.multiply(np.ones(data.shape),
-                                                 np.transpose(self.means, (1, 0))[:, np.newaxis]), newshape=data.shape)
+                                                 np.reshape(self.means, (1, -1))[:, np.newaxis]), newshape=data.shape)
             self.deviations = np.expand_dims(np.sqrt(np.sum(diff**2, axis=0)/(diff.shape[0]-1)), axis=1)
         return diff/np.reshape(np.multiply(np.ones(data.shape),
                                            np.transpose(self.deviations, (1, 0))[:, np.newaxis]), newshape=data.shape)
@@ -45,7 +45,8 @@ class DecimalScaling(Normalizer):
         :return: normalized data
         """
         if self.power is None:
-            self.power = np.round(np.log10(np.max(data, axis=0)))
+            range = np.max(np.abs(data), axis=0)
+            self.power = np.round(np.log10(range))
             self.power = np.expand_dims(np.power(10*np.ones(self.power.shape), self.power), axis=1)
         return data / np.reshape(np.multiply(np.ones(data.shape),
                                              np.transpose(self.power, (1, 0))[:, np.newaxis]), newshape=data.shape)
