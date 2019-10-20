@@ -1,5 +1,5 @@
-from model.nn import *
-from functions.activation_functions import *
+from src.model.nn import *
+from src.functions.activation_functions import *
 import sys
 import os
 

@@ -25,6 +25,7 @@ def load_dataset(path):
     return np.loadtxt(open(path, "rb"), delimiter=",", skiprows=1,
                       converters={1: lambda x: 1 if b"b" in x else 0})
 
+
 def split(dataset, test_relative_size=.3):
     training_size = int(dataset.shape[0] * (1-test_relative_size))
     np.random.shuffle(dataset)

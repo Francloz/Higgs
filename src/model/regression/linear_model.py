@@ -1,5 +1,5 @@
-from functions.loss import *
-from model.model import Model
+from src.functions.loss import *
+from src.model.model import Model
 
 
 class LinearModel(Model):

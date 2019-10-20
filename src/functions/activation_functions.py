@@ -93,8 +93,8 @@ class HardTanh(ActivationFunction):
         return np.where(x > self.max, self.max, x)
 
     def gradient(self, x):
-        x = np.where(x < self.min, 0, x)
-        return np.where(x > self.max, 0, x)
+        x = np.where(x < self.min, 1, x)
+        return np.where(x > self.max, 1, x)
 
 
 class BipolarSigmoid(ActivationFunction):

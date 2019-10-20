@@ -1,6 +1,6 @@
-from model.model import Model
+from src.model.model import Model
 import numpy as np
-from functions.activation_functions import Identity, ActivationFunction
+from src.functions.activation_functions import Identity, ActivationFunction
 
 
 class NNLayer(Model):

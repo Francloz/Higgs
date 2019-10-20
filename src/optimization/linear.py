@@ -1,7 +1,7 @@
-from optimization.optimizer import Optimizer
-from utils.data_manipulation import *
-from functions.loss import MSE
-from model.regression.linear_model import LinearModel
+from src.optimization.optimizer import Optimizer
+from src.utils.data_manipulation import *
+from src.functions.loss import MSE
+from src.model.regression.linear_model import LinearModel
 
 
 class LinearOptimizer(Optimizer):
@@ -10,7 +10,7 @@ class LinearOptimizer(Optimizer):
     """
 
 
-class SGD(LinearOptimizer):
+class LinearSGD(LinearOptimizer):
     def __call__(self, model: LinearModel, tx, y, **kwargs):
         """
         Performs Stochastic Gradient Descent.
@@ -40,7 +40,7 @@ class SGD(LinearOptimizer):
             print(running_loss)
 
 
-class GD(LinearOptimizer):
+class LinearGD(LinearOptimizer):
     def __call__(self, model: LinearModel, tx, y, **kwargs):
         """
         Performs Stochastic Gradient Descent.
