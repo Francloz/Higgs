@@ -19,13 +19,13 @@ if __name__ == "__main__":
     loss = LogCosh()
     optimizer = LinearGD()
     optimizer(model, x, y, lr=0.01, num_batches=100, loss=loss, batch_size=1, epochs=0)
-    print(model.get_w())
+    print(model.get_params())
 
     model = NNLayer((2, 2), Identity())
     model.set_param(np.ones((2, 2)))
     optimizer = NNLayerGD()
     optimizer(model, x, y, lr=0.01, num_batches=100, loss=loss, batch_size=1, epochs=0)
-    print(model.get_w())
+    print(model.get_params())
 
     optimizer = LogisticSGD()
     """

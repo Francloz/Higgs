@@ -21,7 +21,7 @@ class LogisticGD(Optimizer):
         regularize = kwargs['regularize'] if 'regularize' in kwargs else 0.1
         sigma = Sigmoid()
         for epoch in range(epochs):
-            w = model.get_w()
+            w = model.get_params()
             model.set_param(w - lr*(tx.T.dot(sigma(tx.dot(w))-y) - regularize*w))
             # print(MSE()(sigma(tx.dot(w)), y))
 
@@ -46,7 +46,7 @@ class LogisticSGD(Optimizer):
         sigma = Sigmoid()
         for epoch in range(epochs):
             for batch_y, batch_tx in batch_iter(y, tx, batch_size, num_batches):
-                w = model.get_w()
+                w = model.get_params()
                 model.set_param(w - lr*(batch_tx.T.dot(sigma(batch_tx.dot(w))-batch_y) + regularize*w))
             # print(MSE()(sigma(tx.dot(model.get_w())), y))
 

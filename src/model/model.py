@@ -5,6 +5,9 @@ class Model:
     def __call__(self, tx: np.array):
         pass
 
+    def get_params(self):
+        pass
+
     def set_param(self, w: np.array):
         pass
 

@@ -41,7 +41,7 @@ class LinearModel(Model):
         np.savetxt(f, self.w)
         f.close()
 
-    def get_w(self):
+    def get_params(self):
         return self.w
 
 
