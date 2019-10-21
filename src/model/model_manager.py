@@ -1,5 +1,5 @@
-from model.model import Model
-from utils.data_manipulation import *
+from src.model.model import Model
+from src.utils.data_manipulation import *
 from src.optimization.optimizer import Optimizer
 from src.functions.loss import Loss
 import time

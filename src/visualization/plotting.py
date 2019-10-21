@@ -1,6 +1,5 @@
 import numpy as np
 import matplotlib.pyplot as plt
-import seaborn as sns
 
 def plot(data: np.array, bounds: np.array):
     """
@@ -106,4 +105,8 @@ if __name__ == "__main__":
     #plot_variances(tx)
     #plot_means(tx, y, 2)
     plot_feature(tx,y,2)
+<<<<<<< HEAD
     pass
+=======
+    pass
+>>>>>>> 6ea76f328ac8ebb137f8246f5f38afc6f954cc96
