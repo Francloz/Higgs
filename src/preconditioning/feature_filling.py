@@ -1,16 +1,14 @@
 import numpy as np
+from src.model.regression.linear_model import LinearModel
+from src.optimization.linear import *
+from src.preconditioning.normalization import MinMaxNormalizer
 
 # See https://dev.acquia.com/blog/how-to-handle-missing-data-in-machine-learning-5-techniques/09/07/2018/19651
 
 
 class MeanFilling:
     def __init__(self, x):
-
-        for i in range(x.shape[1]):
-            feature = x[np.logical_and(x[:, i] != -999, x[:, i] != 0), i]
-            pass
         self.means = np.array([np.mean(x[np.logical_and(x[:, i] != -999, x[:, i] != 0), i], axis=0) for i in range(x.shape[1])])
-        pass
 
     def __call__(self, x):
         x_aux = np.array(x, copy=True)
@@ -23,7 +21,6 @@ class MeanFilling:
 class MedianFilling:
     def __init__(self, x):
         self.medians = np.array([np.median(x[np.logical_and(x[:, i] != -999, x[:, i] != 0), i], axis=0) for i in range(x.shape[1])])
-        pass
 
     def __call__(self, x):
         x_aux = np.array(x, copy=True)
@@ -37,10 +34,10 @@ class ClassAverageFilling:
     def __init__(self, x, y, n_classes):
         self.n_classes = n_classes
         # Smth wrong here
-        self.means = np.sum(np.array([np.sum(y == i)*np.mean(x[np.logical_and(np.logical_and(x[:, i] != -999,
-                                                                                             x[:, i] != 0), (y == i))],
-                                                             axis=0)/y.shape[0] for i in range(n_classes)]), axis=0)
-        pass
+        self.means = np.sum(np.array([np.sum(y == i) *
+                                      np.mean(x[np.logical_and(np.logical_and(x[:, i] != -999,
+                                                               x[:, i] != 0), (y == i))],
+                                              axis=0)/y.shape[0] for i in range(n_classes)]), axis=0)
 
     def __call__(self, x):
         x_aux = np.array(x, copy=True)
@@ -50,13 +47,57 @@ class ClassAverageFilling:
         return x_aux
 
 
-import os
-if __name__ == "__main__":
-    path = os.path.split(os.path.split(os.path.dirname(os.path.abspath(__file__)))[0])[0] + '\\resources\\'
-    data = np.load(file=path + 'train.npy')
-    x = data[:, 2:]
-    y = data[:, 1]
-    x2 = MeanFilling(x)(x)
-    x1 = ClassAverageFilling(x,y,2)(x)
-    x3 = MedianFilling(x)(x)
-    pass
+class LinearRegressionFilling:
+    def __init__(self, x, to_fill=-999, epochs=0):
+        self.to_fill = -999
+        self.x = x[~np.any(x == to_fill, axis=1)]
+        self.normalizer = MinMaxNormalizer()
+        self.x = self.normalizer(self.x)
+        self.models = [LinearModel((self.x.shape[1]-1, 1)) for i in range(x.shape[1])]
+        optimizer = LinearSGD()
+        mask = np.repeat(True, x.shape[1])
+        for i in range(x.shape[1]):
+            mask[i] = False
+            optimizer(self.models[i], self.x[:, mask], np.reshape(self.x[:, i], (-1, 1)),
+                      lr=10**-3, epochs=epochs, batch_size=60, num_batches=100)
+            print("Finished learning %d", i)
+            mask[i] = True
+
+    def save(self, file):
+        np.save(arr=np.concatenate([model.get_params().flatten() for model in self.models]), file=file)
+
+    def load(self, file):
+        all_params = np.load(file)
+        shape = self.models[0].get_params().shape
+        size = self.models[0].get_params().size
+        for i in range(len(self.models)):
+            self.models[i].set_param(np.reshape(all_params[i*size:(i+1)*size], shape))
+
+    def __call__(self, x):
+        mask = np.repeat(True, x.shape[1])
+        indexes = [x[:, i] == self.to_fill for i in range(x.shape[1])]
+        aux = self.normalizer(MedianFilling(x)(x))
+        for i in range(x.shape[1]):
+            mask[i] = False
+            masked_features = aux[:, mask]
+            masked_features = masked_features[indexes[i]]
+            output = self.models[i](masked_features)
+            aux[indexes[i], i] = output.flatten()
+            mask[i] = True
+        return aux
+
+
+# import os
+#
+# if __name__ == "__main__":
+#     path = os.path.split(os.path.split(os.path.dirname(os.path.abspath(__file__)))[0])[0] + '\\resources\\'
+#     data = np.load(file=path + 'train.npy')
+#     x = data[:, 2:]
+#     y = data[:, 1]
+#     # x2 = MeanFilling(x)(x)
+#     # x1 = ClassAverageFilling(x, y, 2)(x)
+#     # x3 = MedianFilling(x)(x)
+#     filler = LinearRegressionFilling(x)
+#     filler.load("./regression_filler_params.npy")
+#     x4 = filler(x)
+#     pass

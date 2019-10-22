@@ -1,6 +1,6 @@
 from src.model.nn.nn_layer import NNLayer
 from src.optimization.optimizer import Optimizer
-from src.functions.loss import MSE
+from src.functions.loss import LogCosh
 import numpy as np
 from src.utils.data_manipulation import batch_iter
 
@@ -19,7 +19,7 @@ class NNLayerSGD(Optimizer):
                 """
         batch_size = kwargs['batch_size'] if 'batch_size' in kwargs else 1
         num_batches = min(kwargs['num_batches'], tx.shape[0]) if 'num_batches' in kwargs else 1
-        loss = kwargs['loss'] if 'loss' in kwargs else MSE()
+        loss = kwargs['loss'] if 'loss' in kwargs else LogCosh()
         lr = kwargs['lr'] if 'lr' in kwargs else .01
         epochs = kwargs['epochs'] if 'epochs' in kwargs else 100
 
@@ -46,7 +46,7 @@ class NNLayerGD(Optimizer):
         :param loss: loss function
         :param lr: learning rate
         """
-        loss = kwargs['loss'] if 'loss' in kwargs else MSE()
+        loss = kwargs['loss'] if 'loss' in kwargs else LogCosh()
         lr = kwargs['lr'] if 'lr' in kwargs else .01
         epochs = kwargs['epochs'] if 'epochs' in kwargs else 1000
 
