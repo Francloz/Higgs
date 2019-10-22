@@ -42,29 +42,29 @@ class LDA:
     def __call__(self, x):
         return np.dot(x, self.w).astype(float)
 
-# import os
-# from matplotlib import pyplot as plt
-# from mpl_toolkits.mplot3d import Axes3D
-#
-# if __name__ == "__main__":
-#     path = os.path.split(os.path.split(os.path.dirname(os.path.abspath(__file__)))[0])[0] + '\\resources\\'
-#     data = np.load(file=path + 'train.npy')
-#
-#     labels = data[:, 1]
-#     X = (data[:, 2:])
-#     X_lda = DecimalScaling()(LDA(X, labels)(X))
-#
-#     fig = plt.figure()
-#     ax = fig.add_subplot(projection='3d')
-#     n_pts = int(500)
-#     for label, marker, color in zip((0, 1), ('^', 'o'), ('blue', 'red')):
-#         r = int(np.random.uniform(0, X_lda[labels == label].shape[0]-n_pts-1))
-#         ax.scatter(X_lda[labels == label, 0][r:r+n_pts],
-#                    X_lda[labels == label, 1][r:r+n_pts],
-#                    X_lda[labels == label, 2][r:r+n_pts],
-#                    marker=marker)
-#     ax.set_xlabel('X Label')
-#     ax.set_ylabel('Y Label')
-#     ax.set_zlabel('Z Label')
-#     plt.show()
-#     pass
+import os
+from matplotlib import pyplot as plt
+from mpl_toolkits.mplot3d import Axes3D
+
+if __name__ == "__main__":
+    path = os.path.split(os.path.split(os.path.dirname(os.path.abspath(__file__)))[0])[0] + '\\resources\\'
+    data = np.load(file=path + 'train.npy')
+
+    labels = data[:, 1]
+    X = (data[:, 2:])
+    X_lda = DecimalScaling()(LDA(X, labels)(X))
+
+    fig = plt.figure()
+    ax = fig.add_subplot(projection='3d')
+    n_pts = int(500)
+    for label, marker, color in zip((0, 1), ('^', 'o'), ('blue', 'red')):
+        r = int(np.random.uniform(0, X_lda[labels == label].shape[0]-n_pts-1))
+        ax.scatter(X_lda[labels == label, 0][r:r+n_pts],
+                   X_lda[labels == label, 1][r:r+n_pts],
+                   X_lda[labels == label, 2][r:r+n_pts],
+                   marker=marker)
+    ax.set_xlabel('X Label')
+    ax.set_ylabel('Y Label')
+    ax.set_zlabel('Z Label')
+    plt.show()
+    pass

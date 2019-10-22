@@ -35,8 +35,8 @@ class LinearSGD(LinearOptimizer):
                 x = np.transpose(batch_tx, (1, 0))
                 out = model(batch_tx)
                 running_loss += loss(out, y)
-                model.set_param(model.get_w() - lr * np.dot(np.transpose(batch_tx, (1, 0)),
-                                                            loss.gradient(model(batch_tx), batch_y)))
+                model.set_param(model.get_params() - lr * np.dot(np.transpose(batch_tx, (1, 0)),
+                                                                 loss.gradient(model(batch_tx), batch_y)))
             print(running_loss)
 
 
@@ -60,8 +60,8 @@ class LinearGD(LinearOptimizer):
             x = np.transpose(tx, (1, 0))
             out = model(tx)
             print(loss(out, y))
-            model.set_param(model.get_w() - lr * np.dot(np.transpose(tx, (1, 0)),
-                                                        loss.gradient(model(tx), y)))
+            model.set_param(model.get_params() - lr * np.dot(np.transpose(tx, (1, 0)),
+                                                             loss.gradient(model(tx), y)))
 
 
 class Ridge(LinearOptimizer):

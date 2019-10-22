@@ -44,24 +44,23 @@ class CorrelationThreshold:
         return x[:, self.idx.flatten()]
 
 
-# def drange(x, y, jump):
-#     while x < y:
-#         yield float(x)
-#         x += jump
-#
-# import os
-#
-# if __name__ == '__main__':
-#     path = os.path.split(os.path.split(os.path.dirname(os.path.abspath(__file__)))[0])[0] + '\\resources\\'
-#     data = np.load(file=path + 'train.npy')[:, 2:]
-#     for th in drange(0.01, 1, 0.01):
-#         dr = VarianceThreshold(data, threshold=th)
-#         aux = dr(data)
-#         print((int(sum(~dr.idx)), dr.threshold))
-# if __name__ == '__main__':
-#     path = os.path.split(os.path.split(os.path.dirname(os.path.abspath(__file__)))[0])[0] + '\\resources\\'
-#     data = np.load(file=path + 'train.npy')[:, 2:]
-#     for th in drange(.99, 1, 0.001):
-#         dr = CorrelationThreshold(data, threshold=th)
-#         aux = dr(data)
-#         print((int(sum(~dr.idx)), dr.threshold))
+def drange(x, y, jump):
+    while x < y:
+        yield float(x)
+        x += jump
+
+import os
+
+if __name__ == '__main__':
+    path = os.path.split(os.path.split(os.path.dirname(os.path.abspath(__file__)))[0])[0] + '\\resources\\'
+    data = np.load(file=path + 'train.npy')[:, 2:]
+    for th in drange(0.01, 1, 0.01):
+        dr = VarianceThreshold(data, threshold=th)
+        aux = dr(data)
+        print((int(sum(~dr.idx)), dr.threshold))
+    path = os.path.split(os.path.split(os.path.dirname(os.path.abspath(__file__)))[0])[0] + '\\resources\\'
+    data = np.load(file=path + 'train.npy')[:, 2:]
+    for th in drange(.99, 1, 0.001):
+        dr = CorrelationThreshold(data, threshold=th)
+        aux = dr(data)
+        print((int(sum(~dr.idx)), dr.threshold))
