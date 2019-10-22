@@ -2,7 +2,7 @@ from src.optimization.optimizer import Optimizer
 from src.utils.data_manipulation import *
 from src.functions.loss import LogCosh
 from src.model.regression.linear_model import LinearModel
-
+import sys
 
 class LinearOptimizer(Optimizer):
     """
@@ -27,10 +27,12 @@ class LinearSGD(LinearOptimizer):
         loss = kwargs['loss'] if 'loss' in kwargs else LogCosh()
         lr = kwargs['lr'] if 'lr' in kwargs else .01
         epochs = kwargs['epochs'] if 'epochs' in kwargs else 100
-
+        i = 0
+        running_loss = 0
         for epoch in range(epochs):
             running_loss = 0
             for batch_y, batch_tx in batch_iter(y, tx, batch_size, num_batches):
+                sys.stdout.write("\rProgress: %0.2f%%" % float(i / num_batches/ epochs * 100))
                 loss_grad = loss.gradient(model(batch_tx), batch_y)
                 x = np.transpose(batch_tx, (1, 0))
                 out = model(batch_tx)
@@ -42,8 +44,8 @@ class LinearSGD(LinearOptimizer):
                 grad = loss.gradient(model(batch_tx), batch_y)
                 model.set_param(model.get_params() - lr * np.dot(np.transpose(batch_tx, (1, 0)),
                                                                  loss.gradient(model(batch_tx), batch_y)))
-            print(running_loss)
-        print('Finished learning')
+                i += 1
+        sys.stdout.write("\rFinal running loss: %0.2f%%\n" % float(running_loss))
 
 
 class LinearGD(LinearOptimizer):

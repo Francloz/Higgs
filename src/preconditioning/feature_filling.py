@@ -48,9 +48,8 @@ class ClassAverageFilling:
 
 
 class LinearRegressionFilling:
-    def __init__(self, x, to_fill=-999, epochs=0):
-        self.to_fill = -999
-        self.x = x[~np.any(x == to_fill, axis=1)]
+    def __init__(self, x, epochs=0):
+        self.x = x[~np.logical_or(np.any(x == -999, axis=1), np.any(x == 0, axis=1))]
         self.normalizer = MinMaxNormalizer()
         self.x = self.normalizer(self.x)
         self.models = [LinearModel((self.x.shape[1]-1, 1)) for i in range(x.shape[1])]
@@ -60,7 +59,6 @@ class LinearRegressionFilling:
             mask[i] = False
             optimizer(self.models[i], self.x[:, mask], np.reshape(self.x[:, i], (-1, 1)),
                       lr=10**-3, epochs=epochs, batch_size=60, num_batches=100)
-            print("Finished learning %d", i)
             mask[i] = True
 
     def save(self, file):
@@ -75,7 +73,7 @@ class LinearRegressionFilling:
 
     def __call__(self, x):
         mask = np.repeat(True, x.shape[1])
-        indexes = [x[:, i] == self.to_fill for i in range(x.shape[1])]
+        indexes = [np.logical_or(x[:, i] == -999,x[:, i] == 0) for i in range(x.shape[1])]
         aux = self.normalizer(MedianFilling(x)(x))
         for i in range(x.shape[1]):
             mask[i] = False
@@ -87,17 +85,19 @@ class LinearRegressionFilling:
         return aux
 
 
-# import os
-#
-# if __name__ == "__main__":
-#     path = os.path.split(os.path.split(os.path.dirname(os.path.abspath(__file__)))[0])[0] + '\\resources\\'
-#     data = np.load(file=path + 'train.npy')
-#     x = data[:, 2:]
-#     y = data[:, 1]
-#     # x2 = MeanFilling(x)(x)
-#     # x1 = ClassAverageFilling(x, y, 2)(x)
-#     # x3 = MedianFilling(x)(x)
-#     filler = LinearRegressionFilling(x)
-#     filler.load("./regression_filler_params.npy")
-#     x4 = filler(x)
-#     pass
+import os
+
+if __name__ == "__main__":
+    path = os.path.split(os.path.split(os.path.dirname(os.path.abspath(__file__)))[0])[0] + '\\resources\\'
+    data = np.load(file=path + 'train.npy')
+    x = data[:, 2:]
+    y = data[:, 1]
+    # x2 = MeanFilling(x)(x)
+    # x1 = ClassAverageFilling(x, y, 2)(x)
+    # x3 = MedianFilling(x)(x)
+    filler = LinearRegressionFilling(x, epochs=0)
+    # filler.save("./regression_filler_params.npy")
+    filler.load("./regression_filler_params.npy")
+    x4 = filler(x)
+    np.save(arr=x4, file=path + 'filled_dataset.npy')
+    pass
