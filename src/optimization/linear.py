@@ -85,7 +85,6 @@ class Lasso(LinearOptimizer):
         :param y: labels
         :param lambda_: lasso hyper-parameter
         """
-        
         pass
 
 

@@ -1,11 +1,13 @@
+import sys
+import os
+sys.path.append(os.path.split(os.path.dirname(os.path.abspath(__file__)))[0])
+
 from model.nn.nn import *
 from functions.activation_functions import *
 from src.utils.data_manipulation import *
 from preconditioning.normalization import *
 from functions.loss import *
 from functions.distance import L2
-import sys
-import os
 
 if __name__ == "__main__":
     parallel_nn = 10
