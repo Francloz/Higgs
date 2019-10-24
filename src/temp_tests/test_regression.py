@@ -4,7 +4,8 @@ import sys
 sys.path.append(os.path.split(os.path.split(os.path.dirname(os.path.abspath(__file__)))[0])[0]) #'C:\\Users\\Abhi Kamboj\\ML_Higgs')
 
 from src.optimization.linear import *
-from src import *
+from src.preconditioning.normalization import*
+from src.preconditioning.feature_elimination import*
 #import src.model.regression.linear_model
 
 def process_avg_xs(x):
@@ -44,55 +45,58 @@ if __name__=="__main__":
     data = np.load("traindata.npy")
     print("just loaded")
     print("Data:",data.shape)
+    g = GaussianNormalizer()
+    MMN = MinMaxNormalizer()
+    GOR = GaussianOutlierRemoval()
+
     y = np.expand_dims(data[:, 1], axis=1)
     print(y)
     print("y", y.shape)
     tx = data[:, 2:]
     
+    v_featElim = VarianceThreshold(tx)
+    tx = v_featElim(tx)
+    print("x shape: ",tx.shape)
    # tx,y = processx_remData(tx,y)
-    x = process_avg_xs(tx)
-    print("tx",tx.shape)
-    tx_bias = np.ones((tx.shape[0],tx.shape[1]+1))
-    print("tx",tx_bias.shape)
+   # tx = process_avg_xs(tx)
+   # tx = process_avg_xs(tx)
 
-    #seems to work better without the bias
-    tx_bias[:,:-1] = tx
+    #tx = g(tx)
+    tx=MMN(tx)
+    #tx = GOR(tx)
 
+    tx_train,tx_test = split(tx)
+    y_train,y_test = split(y)
     m = LinearModel(tx.shape[0])
     r = Ridge()
     print(m.w)
 
-
+    
     #r(m,tx,y,.2)
     highm =0
     highlam = 0
-    lambdas = np.logspace(-15,15,num=200) #np.linspace(-100,100,5001)
+    lambdas = np.logspace(-5,0,15) #np.linspace(-100,100,5001)
     
-    #best lamda is 74.11%
-    # .5 => .741366 (but LS does better!)
-    # -63.96->  0.74136 185340
-    #Max:  0.741412 185353 lam:  9540.954763499964
-    # 0.741416 185354 lam:  9884.959046625505
     for ind,lam in enumerate(lambdas): 
-        r(m,tx,y,lam)
-        y_guess = np.array(list(map(lambda x: 1 if x>.5 else 0, m(tx))))
+        r(m,tx_train,y_train,lam)
+        y_guess = np.array(list(map(lambda x: 1 if x>.5 else 0, m(tx_test))))
         #print("sum of guess: ",np.sum(y_guess))
-        num_correct = len(y_guess) - np.sum(np.logical_xor(y_guess,y.transpose()))
+        num_correct = len(y_guess) - np.sum(np.logical_xor(y_guess,y_test.transpose()))
         #print("With Lamda:",lam, "correct:",num_correct)
         if num_correct>highm:
             highm=num_correct
             highlam = lam        
         if ind%500==0:
             print("On: ",ind)
-    print("Max: ", highm/250000, highm, "lam: ",highlam)
+    print("Max: ", highm/(250000*.3), highm, "lam: ",highlam)
 
-    # l = LS()
-    # l(m,tx,y)
-    # y_guess = np.array(list(map(lambda x: 1 if x>.5 else 0, m(tx))))
-    #     #print("sum of guess: ",np.sum(y_guess))
-    # num_correct = len(y_guess) - np.sum(np.logical_xor(y_guess,y.transpose()))
+    l = LS()
+    l(m,tx_train,y_train)
+    y_guess = np.array(list(map(lambda x: 1 if x>.5 else 0, m(tx_test))))
+        #print("sum of guess: ",np.sum(y_guess))
+    num_correct = len(y_guess) - np.sum(np.logical_xor(y_guess,y_test.transpose()))
 
-    # print("LeastSquares: ",num_correct/250000)
+    print("LeastSquares: ",num_correct/(250000*.3))
 
     
 

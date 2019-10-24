@@ -95,6 +95,7 @@ class LS(LinearOptimizer):
         :param tx: sample
         :param y: labels
         """
+        #w=(XT*X)^-1*ATy
         w=np.linalg.inv(tx.transpose()@tx)@tx.transpose()@y
         model.set_param(w)
 
