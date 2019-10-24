@@ -106,7 +106,7 @@ if __name__ == "__main__":
     # plot_correlations(tx)
     # plot_variances(tx)
     # plot_means(tx, y, 2)
-    # for i in range(tx.shape[1]):
-    #     plot_feature(tx, y, i)
+    for i in range(tx.shape[1]):
+        plot_feature(tx, y, i)
     plot_correlation(tx, 23, 24)
     pass

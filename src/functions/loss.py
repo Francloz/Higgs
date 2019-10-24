@@ -16,7 +16,7 @@ class Loss:
         pass
 
 
-class MSE(Loss):
+class LogCosh(Loss):
     """
     Generic MSE loss
     """

@@ -1,8 +1,8 @@
 from src.optimization.optimizer import Optimizer
 from src.utils.data_manipulation import *
-from src.functions.loss import MSE
+from src.functions.loss import LogCosh
 from src.model.regression.linear_model import LinearModel
-
+import sys
 
 class LinearOptimizer(Optimizer):
     """
@@ -24,20 +24,28 @@ class LinearSGD(LinearOptimizer):
         """
         batch_size = kwargs['batch_size'] if 'batch_size' in kwargs else 1
         num_batches = min(kwargs['num_batches'], tx.shape[0]) if 'num_batches' in kwargs else 1
-        loss = kwargs['loss'] if 'loss' in kwargs else MSE()
+        loss = kwargs['loss'] if 'loss' in kwargs else LogCosh()
         lr = kwargs['lr'] if 'lr' in kwargs else .01
         epochs = kwargs['epochs'] if 'epochs' in kwargs else 100
-
+        i = 0
+        running_loss = 0
         for epoch in range(epochs):
             running_loss = 0
             for batch_y, batch_tx in batch_iter(y, tx, batch_size, num_batches):
+                sys.stdout.write("\rProgress: %0.2f%%" % float(i / num_batches/ epochs * 100))
                 loss_grad = loss.gradient(model(batch_tx), batch_y)
                 x = np.transpose(batch_tx, (1, 0))
                 out = model(batch_tx)
-                running_loss += loss(out, y)
+                running_loss += loss(out, batch_y)
+
+                w = model.get_params()
+                dir = lr * np.dot(np.transpose(batch_tx, (1, 0)), loss.gradient(model(batch_tx), batch_y))
+                tx_aux = np.transpose(batch_tx, (1, 0))
+                grad = loss.gradient(model(batch_tx), batch_y)
                 model.set_param(model.get_params() - lr * np.dot(np.transpose(batch_tx, (1, 0)),
                                                                  loss.gradient(model(batch_tx), batch_y)))
-            print(running_loss)
+                i += 1
+        sys.stdout.write("\rFinal running loss: %0.2f%%\n" % float(running_loss))
 
 
 class LinearGD(LinearOptimizer):
@@ -50,7 +58,7 @@ class LinearGD(LinearOptimizer):
         :param loss: loss function
         :param lr: learning rate
         """
-        loss = kwargs['loss'] if 'loss' in kwargs else MSE()
+        loss = kwargs['loss'] if 'loss' in kwargs else LogCosh()
         lr = kwargs['lr'] if 'lr' in kwargs else .01
         epochs = kwargs['epochs'] if 'epochs' in kwargs else 100
 
