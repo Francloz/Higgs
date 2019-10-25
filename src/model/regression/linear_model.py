@@ -3,6 +3,9 @@ from src.model.model import Model
 
 
 class LinearModel(Model):
+    def __str__(self):
+        return "LinearModel"
+
     def __init__(self, shape: tuple):
         """
         Class constructor.
