@@ -12,6 +12,9 @@ class Normalizer:
 
 
 class GaussianNormalizer(Normalizer):
+    def __str__(self):
+        return "GaussianNormalizer"
+
     def __init__(self):
         self.means = None
         self.deviations = None
@@ -24,7 +27,8 @@ class GaussianNormalizer(Normalizer):
         """
         if not (self.means is None):
             diff = data - np.reshape(np.multiply(np.ones(data.shape),
-                                                 np.transpose(self.means, (1, 0))[:, np.newaxis]), newshape=data.shape)
+                                                 np.reshape(self.means, (1, 0))), newshape=data.shape)
+
         else:
             self.means = np.mean(data, axis=0)
             diff = data - np.reshape(np.multiply(np.ones(data.shape),
@@ -35,6 +39,9 @@ class GaussianNormalizer(Normalizer):
 
 
 class DecimalScaling(Normalizer):
+    def __str__(self):
+        return "DecimalScaling"
+
     def __init__(self):
         self.power = None
 
@@ -53,6 +60,9 @@ class DecimalScaling(Normalizer):
 
 
 class MinMaxNormalizer(Normalizer):
+    def __str__(self):
+        return "MinMaxNormalizer"
+
     def __init__(self):
         self.min_max = None
 
@@ -63,9 +73,9 @@ class MinMaxNormalizer(Normalizer):
         :return: normalized data
         """
         if self.min_max is None:
-            self.min_max = np.expand_dims(np.max(data, axis=0) - np.min(data, axis=0), axis=1)
-        return data / np.reshape(np.multiply(np.ones(data.shape),
-                                             np.transpose(self.min_max, (1, 0))[:, np.newaxis]), newshape=data.shape)
+            self.min_max = np.reshape(np.max(np.abs(data), axis=0), (1, -1))
+        matrix = np.ones((data.shape[0], 1)).dot(self.min_max)
+        return data / matrix
 
 
 class GaussianOutlierRemoval(Normalizer):

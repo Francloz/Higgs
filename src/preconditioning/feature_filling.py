@@ -7,6 +7,9 @@ from src.preconditioning.normalization import MinMaxNormalizer
 
 
 class MeanFilling:
+    def __str__(self):
+        return "MeanFilling"
+
     def __init__(self, x):
         self.means = np.array([np.mean(x[np.logical_and(x[:, i] != -999, x[:, i] != 0), i], axis=0) for i in range(x.shape[1])])
 
@@ -19,6 +22,9 @@ class MeanFilling:
 
 
 class MedianFilling:
+    def __str__(self):
+        return "MedianFilling"
+
     def __init__(self, x):
         self.medians = np.array([np.median(x[np.logical_and(x[:, i] != -999, x[:, i] != 0), i], axis=0) for i in range(x.shape[1])])
 
@@ -48,17 +54,26 @@ class ClassAverageFilling:
 
 
 class LinearRegressionFilling:
+    def __str__(self):
+        return "LinearRegressionFilling"
+
     def __init__(self, x, epochs=0):
-        self.x = x[~np.logical_or(np.any(x == -999, axis=1), np.any(x == 0, axis=1))]
+        x = x[~np.logical_or(np.any(x == -999, axis=1), np.any(x == 0, axis=1))]
         self.normalizer = MinMaxNormalizer()
-        self.x = self.normalizer(self.x)
-        self.models = [LinearModel((self.x.shape[1]-1, 1)) for i in range(x.shape[1])]
+        x = self.normalizer(x)
+        self.models = [LinearModel((x.shape[1]-1, 1)) for i in range(x.shape[1])]
         optimizer = LinearSGD()
         mask = np.repeat(True, x.shape[1])
         for i in range(x.shape[1]):
             mask[i] = False
-            optimizer(self.models[i], self.x[:, mask], np.reshape(self.x[:, i], (-1, 1)),
-                      lr=10**-3, epochs=epochs, batch_size=60, num_batches=100)
+            step_epoch = 50
+            lr_reduc = 0.9
+            lr = 10**-1
+            for epoch in range(int(epochs/step_epoch)):
+                optimizer(self.models[i],  x[:, mask], np.reshape(x[:, i], (-1, 1)),
+                          lr=lr, epochs=step_epoch, batch_size=20, num_batches=100)
+                lr *= lr_reduc
+            sys.stdout.write("\rLearned %d\r" % i)
             mask[i] = True
 
     def save(self, file):
@@ -73,7 +88,7 @@ class LinearRegressionFilling:
 
     def __call__(self, x):
         mask = np.repeat(True, x.shape[1])
-        indexes = [np.logical_or(x[:, i] == -999,x[:, i] == 0) for i in range(x.shape[1])]
+        indexes = [np.logical_or(x[:, i] == -999, x[:, i] == 0) for i in range(x.shape[1])]
         aux = self.normalizer(MedianFilling(x)(x))
         for i in range(x.shape[1]):
             mask[i] = False
@@ -83,6 +98,7 @@ class LinearRegressionFilling:
             aux[indexes[i], i] = output.flatten()
             mask[i] = True
         return aux
+
 
 
 import os
@@ -95,8 +111,9 @@ if __name__ == "__main__":
     # x2 = MeanFilling(x)(x)
     # x1 = ClassAverageFilling(x, y, 2)(x)
     # x3 = MedianFilling(x)(x)
-    filler = LinearRegressionFilling(x, epochs=0)
-    # filler.save("./regression_filler_params.npy")
+    x, _ = split(x, .5)
+    filler = LinearRegressionFilling(x, epochs=1000)
+    filler.save("./regression_filler_params.npy")
     filler.load("./regression_filler_params.npy")
     x4 = filler(x)
     np.save(arr=x4, file=path + 'filled_dataset.npy')

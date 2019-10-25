@@ -16,10 +16,13 @@ class Loss:
         pass
 
 
-class LogCosh(Loss):
+class MSE(Loss):
     """
     Generic MSE loss
     """
+    def __str__(self):
+        return "MSE"
+
     def __call__(self, x, y):
         """
         Computes the loss of the regression.
@@ -40,6 +43,9 @@ class LogCosh(Loss):
 
 
 class MAE(Loss):
+    def __str__(self):
+        return "MAE"
+
     def __call__(self, x, y):
         """
         Computes the loss of the regression.
@@ -62,6 +68,8 @@ class MAE(Loss):
 
 
 class LogCosh(Loss):
+    def __str__(self):
+        return "LogCosh"
     def __call__(self, x, y):
         """
         Computes the loss.
@@ -84,6 +92,9 @@ class LogCosh(Loss):
 
 
 class Quantile(Loss):
+    def __str__(self):
+        return "Quantile"
+
     def __init__(self, gamma=0.1):
         """
         Class constructor.
@@ -117,6 +128,9 @@ class Quantile(Loss):
 
 
 class Huber(Loss):
+    def __str__(self):
+        return "Huber"
+
     def __init__(self, delta=.1):
         """
         Class constructor

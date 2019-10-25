@@ -4,6 +4,9 @@ import numpy as np
 
 
 class Logistic(LinearModel):
+    def __str__(self):
+        return "Logistic"
+
     def __init__(self, input_size):
         super().__init__((input_size, 1))
 
