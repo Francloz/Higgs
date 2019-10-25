@@ -82,9 +82,23 @@ def plot_feature(x, y, feature, n_classes=2):
     plt.show()
 
 def plot_hist(x, y, n_classes=2):
+    # remove -999 and 0 data
+    for i in range(x.shape[0]):
+        for j in range(x.shape[1]):
+            if x[i,j] == -999:
+                x[i,j] = None
+            if x[i,j] == 0 and j != 22: # 0 seems to be a needed value for feature 22
+                x[i,j] = None
+
     label_check = 0
-    for i in range(x.shape[1]):
-        for label in zip(range(n_classes)):
+    for i in range(x.shape[1]):     # 30 features
+        for label in zip(range(n_classes)): # 2 sets labels
+            # for j in range(x[y==label].shape[0]): # rows of data entries
+            #     if x[y==label][j,i] != -999:    
+            #         if label_check == 1:
+            #             plt.hist(x[y==label][j,i], bins='auto', alpha = 0.5, label = 'Higgs')
+            #         else:
+            #             plt.hist(x[y==label][j,i], bins='auto', alpha = 0.5, label = 'N/A')
             if label_check == 1:
                 plt.hist(x[y==label][:,i], bins='auto', alpha = 0.5, label = 'Higgs')
             else:
@@ -95,9 +109,11 @@ def plot_hist(x, y, n_classes=2):
         plt.title("Histogram with feature " + str(i))
         plt.xlabel('Feature')
         plt.ylabel('Count')
+        plt.savefig('Feature' + str(i) + '.png', bbox_inches='tight')
         plt.show()
 
-def plot_feature_percent(x, y, n_classes=2):
+
+def get_feature_percents(x, y, n_classes=2):
     y = y.flatten()
     size = range(x.shape[1])
     for i in range(x.shape[1]):
@@ -134,8 +150,8 @@ if __name__ == "__main__":
     # plot_means(tx, y, 2)
     # for i in range(tx.shape[1]):
     #    plot_feature(tx, y, i)
-    # plot_feature_percent(tx, y)
+    # get_feature_percent(tx, y)
     plot_hist(tx, y)
-    #plot_correlation(tx, 23, 24)
+    # plot_correlation(tx, 23, 24)
     pass
 
