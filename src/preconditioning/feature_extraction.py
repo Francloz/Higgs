@@ -1,6 +1,6 @@
 import numpy as np
 from src.functions.distance import Square
-from src.preconditioning.normalization import DecimalScaling
+from src.preconditioning.normalization import MinMaxNormalizer
 
 
 class LDA:
@@ -49,14 +49,17 @@ from mpl_toolkits.mplot3d import Axes3D
 if __name__ == "__main__":
     path = os.path.split(os.path.split(os.path.dirname(os.path.abspath(__file__)))[0])[0] + '\\resources\\'
     data = np.load(file=path + 'train.npy')
+    idx = ~np.logical_or(np.any(data == -999, axis=1), np.any(data == 0, axis=1))
+    data[:, 2:] = np.load(file=path + 'filled_dataset.npy')
 
     labels = data[:, 1]
     X = (data[:, 2:])
-    X_lda = DecimalScaling()(LDA(X, labels)(X))
+    X = MinMaxNormalizer()(X)
+    X_lda = LDA(X, labels)(X)
 
     fig = plt.figure()
     ax = fig.add_subplot(projection='3d')
-    n_pts = int(500)
+    n_pts = int(1000)
     for label, marker, color in zip((0, 1), ('^', 'o'), ('blue', 'red')):
         r = int(np.random.uniform(0, X_lda[labels == label].shape[0]-n_pts-1))
         ax.scatter(X_lda[labels == label, 0][r:r+n_pts],

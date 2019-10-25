@@ -28,7 +28,8 @@ def load_dataset(path):
 
 def split(dataset, test_relative_size=.3):
     training_size = int(dataset.shape[0] * (1-test_relative_size))
-    np.random.shuffle(dataset)
+    shuffle_indices = np.random.permutation(np.arange(dataset.shape[0]))
+    dataset = dataset[shuffle_indices]
     return dataset[:training_size], dataset[training_size:]
 
 
