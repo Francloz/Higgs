@@ -53,7 +53,6 @@ def plot_correlations(x):
     """
     Plots the data into a graph.
     """
-
     correlations = np.zeros((x.shape[1], x.shape[1]))
     for i in range(x.shape[1]):
         for j in range(x.shape[1]):
@@ -82,6 +81,33 @@ def plot_feature(x, y, feature, n_classes=2):
     plt.ylabel('Label')
     plt.show()
 
+def plot_hist(x, y, n_classes=2):
+    label_check = 0
+    for i in range(x.shape[1]):
+        for label in zip(range(n_classes)):
+            if label_check == 1:
+                plt.hist(x[y==label][:,i], bins='auto', alpha = 0.5, label = 'Higgs')
+            else:
+                plt.hist(x[y==label][:,i], bins='auto', alpha = 0.5, label = 'N/A')
+            label_check += 1
+        label_check = 0
+        plt.legend(loc='upper right')
+        plt.title("Histogram with feature " + str(i))
+        plt.xlabel('Feature')
+        plt.ylabel('Count')
+        plt.show()
+
+def plot_feature_percent(x, y, n_classes=2):
+    y = y.flatten()
+    size = range(x.shape[1])
+    for i in range(x.shape[1]):
+        sum = 0
+        sum = np.sum(x[:,i]==-999)
+        percent = sum/175000
+        print(sum, sum/175000)
+        if percent > .70:
+            x[:,i] = 0
+    print("break")
 
 def plot_correlation(x, f1, f2):
     plt.scatter(x[:, f1],
@@ -99,14 +125,17 @@ if __name__ == "__main__":
     path = os.path.split(os.path.split(os.path.dirname(os.path.abspath(__file__)))[0])[0] + '\\resources\\'
     data = np.load(file=path + 'train.npy')
     train, test = split(data)
-    train = GaussianOutlierRemoval()(train[1:])
+    #train = GaussianOutlierRemoval()(train[1:])
     y = train[:, 1]
     tx = train[:, 2:]
-    tx = MinMaxNormalizer()(tx)
+    # tx = MinMaxNormalizer()(tx)
     # plot_correlations(tx)
     # plot_variances(tx)
     # plot_means(tx, y, 2)
-    for i in range(tx.shape[1]):
-        plot_feature(tx, y, i)
-    plot_correlation(tx, 23, 24)
+    # for i in range(tx.shape[1]):
+    #    plot_feature(tx, y, i)
+    # plot_feature_percent(tx, y)
+    plot_hist(tx, y)
+    #plot_correlation(tx, 23, 24)
     pass
+
