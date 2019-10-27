@@ -35,17 +35,18 @@ class LinearSGD(LinearOptimizer):
         i = 0
         running_loss = 0
         for step in range(int(epochs/epoch_step[0])):
-            for epochs in range(epoch_step[0]):
+            for epoch_iter in range(epoch_step[0]):
                 running_loss = 0
                 for batch_y, batch_tx in batch_iter(y, tx, batch_size, num_batches):
                     out = model(batch_tx)
                     running_loss += loss(out, batch_y)
                     model.set_param(model.get_params() - lr * np.dot(np.transpose(batch_tx, (1, 0)),
                                                                      loss.gradient(model(batch_tx), batch_y)))
-            sys.stdout.write("\rProgress: %0.2f%%" % float(i / (step+1)))
             i += 1
+            sys.stdout.write("\rProgress: %0.2f%%" % float((step+1)/epoch_step[0]))
+
             lr *= epoch_step[1]
-        sys.stdout.write("\rFinal running loss: %0.2f%%\r" % float(running_loss))
+        sys.stdout.write("\rFinal running loss: %0.2f%%\n" % float(running_loss))
 
 
 class LinearGD(LinearOptimizer):
@@ -79,14 +80,18 @@ class Ridge(LinearOptimizer):
     def __str__(self):
         return "Ridge"
 
-    def __call__(self, model: LinearModel, tx, y, **kwargs):
+    def __call__(self, model: LinearModel, tx,  y, **kwargs):
         """
         Performs Ridge regression.
         :param tx: sample
         :param y: labels
         :param lambda_: ridge hyper-parameter
         """
-        pass
+        lambda_ = kwargs['lambda_'] if 'lambda_' in kwargs else 10**-5
+
+        #w=(XT*X+lambda*I)^-1*XT*y
+        w = np.linalg.inv(np.transpose(tx)@tx + lambda_/(2*len(y))*np.eye(tx.shape[1], tx.shape[1])) @np.transpose(tx) @y
+        model.set_param(w)
 
 
 class Lasso(LinearOptimizer):
@@ -113,7 +118,9 @@ class LS(LinearOptimizer):
         :param tx: sample
         :param y: labels
         """
-        pass
+        #w=(XT*X)^-1*ATy
+        w=np.linalg.inv(tx.transpose()@tx)@tx.transpose()@y
+        model.set_param(w)
 
 
 class OLS(LinearOptimizer):

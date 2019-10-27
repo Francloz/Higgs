@@ -2,13 +2,17 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 
-def plot(data: np.array, bounds: np.array):
+def plot(x, y, label):
     """
     Plots the data into a graph.
     :param data: array of points in a 2D or 3D space
     :param bounds: bounds of every dimension
     """
-    pass
+    plt.figure()
+    plt.plot(x, y, label=label[2], marker='^')
+    plt.xlabel(label[0])
+    plt.ylabel(label[1])
+    return plt
 
 
 def plot_variances(x):
@@ -41,7 +45,7 @@ def plot_means(x, y, n_classes):
         means = np.mean(x[y == i], axis=0)
         variances = np.var(x[y == i], axis=0)
         plt.errorbar(range(x[y == i].shape[1]), means, yerr=variances, color=color, linestyle='None', marker='o',
-                     capsize=5, markersize=3, label='Class '+str(i))
+                     capsize=5, label='Class '+str(i))
     plt.xticks(range(x.shape[1]), range(x.shape[1]))
     plt.xlabel('Features')
     plt.ylabel('Values')
@@ -58,7 +62,7 @@ def plot_correlations(x):
     correlations = np.zeros((x.shape[1], x.shape[1]))
     for i in range(x.shape[1]):
         for j in range(x.shape[1]):
-            correlations[i, j] = np.corrcoef(x[:, i], x[:, j])[0, 1]
+            correlations[i, j] = np.corrcoef(x[x[i] != -999, i], x[x[j] != -999, j])[0, 1]
     fig, ax = plt.subplots()
     plt.imshow(correlations, label='Correlation', interpolation='nearest')
     plt.xticks(range(x.shape[1]), range(x.shape[1]))
@@ -105,9 +109,9 @@ if __name__ == "__main__":
     y = train[:, 1]
     tx = train[:, 2:]
     tx = MinMaxNormalizer()(tx)
-    # plot_correlations(tx)
+    plot_correlations(tx)
     # plot_variances(tx)
     # plot_means(tx, y, 2)
-    for i in range(tx.shape[1]):
-        plot_feature(tx, y, i)
-    plot_correlation(tx, 23, 24)
+    # for i in range(tx.shape[1]):
+    #     plot_feature(tx, y, i)
+    # plot_correlation(tx, 23, 24)

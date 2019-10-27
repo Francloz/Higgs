@@ -57,8 +57,8 @@ class LogisticSGD(Optimizer):
                 running_loss = 0
                 for batch_y, batch_tx in batch_iter(y, tx, batch_size, num_batches):
                     w = model.get_params()
-
-                    model.set_param(w - lr*(batch_tx.T.dot(sigma(batch_tx.dot(w))-batch_y) + regularize*w))
+                    grad = (batch_tx.T.dot(sigma(batch_tx.dot(w))-batch_y) + regularize*w)
+                    model.set_param(w - lr*grad)
                     running_loss += MAE()(model(batch_tx), batch_y)
                 # print(running_loss/batch_size/num_batches)
                 lr *= epoch_step[1]
