@@ -76,6 +76,7 @@ class LinearGD(LinearOptimizer):
                                                              loss.gradient(model(tx), y)))
 
 
+
 class Ridge(LinearOptimizer):
     def __str__(self):
         return "Ridge"
@@ -97,15 +98,6 @@ class Ridge(LinearOptimizer):
 class Lasso(LinearOptimizer):
     def __str__(self):
         return "Lasso"
-
-    def __call__(self, model: LinearModel, tx, y, **kwargs):
-        """
-        Performs Lasso regression.
-        :param tx: sample
-        :param y: labels
-        :param lambda_: lasso hyper-parameter
-        """
-        pass
 
 
 class LS(LinearOptimizer):
