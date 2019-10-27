@@ -26,7 +26,12 @@ class MedianFilling:
         return "MedianFilling"
 
     def __init__(self, x):
+        for i in range(x.shape[1]):
+            aux = x[np.logical_and(x[:, i] != -999, x[:, i] != 0), i]
+            pass
+
         self.medians = np.array([np.median(x[np.logical_and(x[:, i] != -999, x[:, i] != 0), i], axis=0) for i in range(x.shape[1])])
+        pass
 
     def __call__(self, x):
         x_aux = np.array(x, copy=True)
@@ -37,13 +42,17 @@ class MedianFilling:
 
 
 class ClassAverageFilling:
-    def __init__(self, x, y, n_classes):
-        self.n_classes = n_classes
+    def __str__(self):
+        return 'ClassAverageFilling'
+
+    def __init__(self, x, y, n_classes=2):
         # Smth wrong here
-        self.means = np.sum(np.array([np.sum(y == i) *
-                                      np.mean(x[np.logical_and(np.logical_and(x[:, i] != -999,
-                                                               x[:, i] != 0), (y == i))],
-                                              axis=0)/y.shape[0] for i in range(n_classes)]), axis=0)
+        self.means = np.sum(np.vstack([np.sum(y == c) *
+                                       np.array([np.mean(x[np.logical_and(np.logical_and(x[:, i] != -999, x[:, i] != 0),
+                                                                          y == 0), i],
+                                                         axis=0) for i in range(x.shape[1])])
+                                       for c in range(n_classes)]), axis=0) / x.shape[0]
+        pass
 
     def __call__(self, x):
         x_aux = np.array(x, copy=True)
@@ -101,20 +110,20 @@ class LinearRegressionFilling:
 
 
 
-import os
-
-if __name__ == "__main__":
-    path = os.path.split(os.path.split(os.path.dirname(os.path.abspath(__file__)))[0])[0] + '\\resources\\'
-    data = np.load(file=path + 'train.npy')
-    x = data[:, 2:]
-    y = data[:, 1]
-    # x2 = MeanFilling(x)(x)
-    # x1 = ClassAverageFilling(x, y, 2)(x)
-    # x3 = MedianFilling(x)(x)
-    x, _ = split(x, .5)
-    filler = LinearRegressionFilling(x, epochs=1000)
-    filler.save("./regression_filler_params.npy")
-    filler.load("./regression_filler_params.npy")
-    x4 = filler(x)
-    np.save(arr=x4, file=path + 'filled_dataset.npy')
-    pass
+# import os
+#
+# if __name__ == "__main__":
+#     path = os.path.split(os.path.split(os.path.dirname(os.path.abspath(__file__)))[0])[0] + '\\resources\\'
+#     data = np.load(file=path + 'train.npy')
+#     x = data[:, 2:]
+#     y = data[:, 1]
+#     # x2 = MeanFilling(x)(x)
+#     # x1 = ClassAverageFilling(x, y, 2)(x)
+#     # x3 = MedianFilling(x)(x)
+#     x, _ = split(x, .5)
+#     filler = LinearRegressionFilling(x, epochs=1000)
+#     filler.save("./regression_filler_params.npy")
+#     filler.load("./regression_filler_params.npy")
+#     x4 = filler(x)
+#     np.save(arr=x4, file=path + 'filled_dataset.npy')
+#     pass
