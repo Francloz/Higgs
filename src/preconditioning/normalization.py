@@ -78,6 +78,25 @@ class MinMaxNormalizer(Normalizer):
         return data / matrix
 
 
+class CircleNormalizer(Normalizer):
+    def __str__(self):
+        return "MinMaxNormalizer"
+
+    def __init__(self):
+        pass
+
+    def __call__(self, data, *args):
+        """
+        Normalizes the data using the Min-Max normalization.
+        :param data: original data
+        :return: normalized data
+        """
+        if self.min_max is None:
+            self.min_max = np.reshape(np.max(np.abs(data), axis=0), (1, -1))
+        matrix = np.ones((data.shape[0], 1)).dot(self.min_max)
+        return data / matrix
+
+
 class GaussianOutlierRemoval(Normalizer):
     def __call__(self, data, **kwargs):
         """

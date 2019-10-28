@@ -12,7 +12,8 @@ if __name__ == "__main__":
     path = os.path.split(os.path.split(os.path.dirname(os.path.abspath(__file__)))[0])[0]
     data = np.load(file=path + '\\resources\\' + 'train.npy')
 
-    data = MinMaxNormalizer()(MeanFilling(data[:, 2:])(data[:, 2:]))
+    data = MeanFilling(data[:, 2:])(data[:, 2:])
+    # data = MinMaxNormalizer()(data)
     loss = LogCosh()
     model = LinearModel((data.shape[1], 1))
     kwargs = {'batch_size': 25, 'loss': loss, 'lr': 10**-1, 'epochs': 1000, 'epoch_step': (100, .75)}
@@ -28,4 +29,5 @@ if __name__ == "__main__":
         sum_var = np.max([var1 + var2, 0.000001])
         print(sum_var)
         separability.append(np.abs(mean1 - mean2) / sum_var)
+
     print(separability)
