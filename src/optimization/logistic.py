@@ -4,7 +4,7 @@ from src.utils.data_manipulation import batch_iter
 from src.functions.activation_functions import Sigmoid
 from src.functions.loss import MAE
 # from src.functions.loss import MSE
-
+import numpy as np
 
 class LogisticGD(Optimizer):
     def __str__(self):
@@ -25,8 +25,11 @@ class LogisticGD(Optimizer):
         sigma = Sigmoid()
         for epoch in range(epochs):
             w = model.get_params()
-            model.set_param(w - lr*(tx.T.dot(sigma(tx.dot(w))-y) - regularize*w))
+            grad = tx.T.dot(sigma(tx.dot(w))-y) - regularize*w
+            model.set_param(w - lr*grad)
             # print(MSE()(sigma(tx.dot(w)), y))
+            if np.sum(np.abs(grad)) < lr * 10 ** -2 / model.get_params().size:
+                return
 
 
 class LogisticSGD(Optimizer):
@@ -55,12 +58,19 @@ class LogisticSGD(Optimizer):
         for step in range(int(epochs/epoch_step[0])):
             for epochs in range(epoch_step[0]):
                 running_loss = 0
+                acc_grad = 0
+
                 for batch_y, batch_tx in batch_iter(y, tx, batch_size, num_batches):
                     w = model.get_params()
                     grad = (batch_tx.T.dot(sigma(batch_tx.dot(w))-batch_y) + regularize*w)
+                    acc_grad += np.sum(np.abs(grad))
                     model.set_param(w - lr*grad)
                     running_loss += MAE()(model(batch_tx), batch_y)
                 # print(running_loss/batch_size/num_batches)
-                lr *= epoch_step[1]
+
+                if acc_grad < lr * 10 ** -2 / model.get_params().size:
+                    return
+
+            lr *= epoch_step[1]
 
 

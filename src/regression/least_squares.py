@@ -24,7 +24,7 @@ def least_squares_gd(y, tx, initial_w, max_iters, gamma, loss_function, max_erro
     """
     w = initial_w
     for it in range(max_iters):
-        w = w - (gamma() if isinstance(gamma, Scheduler) else gamma)/y.size * tx*(y-tx*w)
+        w = w - gamma/y.size * tx*(y-tx*w)
         if max_error > 0 and loss_function(np.dot(tx, w), y) < max_error:
             break
     return w, loss_function(y, tx*w)

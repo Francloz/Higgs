@@ -59,6 +59,7 @@ if __name__ == "__main__":
                     ]
 
     n_initial = 10
+
     np.random.seed(0)
 
     min_error = np.inf

@@ -117,7 +117,6 @@ def get_feature_percents(x, y, n_classes=2):
     y = y.flatten()
     size = range(x.shape[1])
     for i in range(x.shape[1]):
-        sum = 0
         sum = np.sum(x[:,i]==-999)
         percent = sum/175000
         print(sum, sum/175000)
@@ -133,25 +132,39 @@ def plot_correlation(x, f1, f2):
     plt.show()
 
 
-from src.preconditioning.normalization import *
+from src.preconditioning.normalization import MinMaxNormalizer
+from src.preconditioning.feature_filling import MeanFilling
 from src.utils.data_manipulation import *
 import os
 
 if __name__ == "__main__":
     path = os.path.split(os.path.split(os.path.dirname(os.path.abspath(__file__)))[0])[0] + '\\resources\\'
     data = np.load(file=path + 'train.npy')
-    train, test = split(data)
-    #train = GaussianOutlierRemoval()(train[1:])
-    y = train[:, 1]
-    tx = train[:, 2:]
-    # tx = MinMaxNormalizer()(tx)
+
+    data[:, 2:] = MinMaxNormalizer()(MeanFilling(data[:, 2:])(data[:, 2:]))
+
+    y = data[:, 1]
+    tx = data[:, 2:]
+
     # plot_correlations(tx)
     # plot_variances(tx)
     # plot_means(tx, y, 2)
     # for i in range(tx.shape[1]):
     #    plot_feature(tx, y, i)
+
+    metric = np.array([0.036434259483545436, 0.01655890915248768, 1.3150692309097907, 0.007325621143385119, 1.0368769447467558, 1.0499657756178657, 0.055327876381386885, 0.008071661275922438, 1.336160314444832, 3.047905391034283, 0.3075455658833619, 0.021964506938275646, 0.196633025986905, 0.3490715850335407, 0.04397869479743367, 0.069910177706796, 0.05036753873395129, 0.018576495119375442, 0.04833707112142514, 0.01243260601796758, 1.4634146341463414, 0.011154814882818392, 0.06629926398224029, 0.49738987958897907, 0.37120208255219167, 0.12524476197090162, 0.2688579029295658, 0.014512364099364499])
+    y = np.where(metric > 10000, 10000, metric)
+    x = np.array(range(1, 30-1))
+    fig, ax = plt.subplots()
+    ax.scatter(x, y, color='r', marker='^')
+
+    for i in range(x.size):
+        ax.annotate(i+1, (x[i] - .4, y[i] ))
+    plt.show()
+
     # get_feature_percent(tx, y)
-    plot_hist(tx, y)
+    # plot_hist(tx, y)
     # plot_correlation(tx, 23, 24)
+
     pass
 

@@ -37,16 +37,19 @@ class LinearSGD(LinearOptimizer):
         for step in range(int(epochs/epoch_step[0])):
             for epoch_iter in range(epoch_step[0]):
                 running_loss = 0
+                acc_grad = 0
+
                 for batch_y, batch_tx in batch_iter(y, tx, batch_size, num_batches):
                     out = model(batch_tx)
                     running_loss += loss(out, batch_y)
-                    model.set_param(model.get_params() - lr * np.dot(np.transpose(batch_tx, (1, 0)),
-                                                                     loss.gradient(model(batch_tx), batch_y)))
-            i += 1
-            sys.stdout.write("\rProgress: %0.2f%%" % float((step+1)/epoch_step[0]))
+                    grad = np.dot(np.transpose(batch_tx, (1, 0)), loss.gradient(model(batch_tx), batch_y))
+                    model.set_param(model.get_params() - lr * grad)
+                    acc_grad += np.sum(np.abs(grad))
 
+                if acc_grad < lr * 10 ** -2 / model.get_params().size:
+                    return
+            i += 1
             lr *= epoch_step[1]
-        sys.stdout.write("\rFinal running loss: %0.2f%%\n" % float(running_loss))
 
 
 class LinearGD(LinearOptimizer):
@@ -67,14 +70,13 @@ class LinearGD(LinearOptimizer):
         epochs = kwargs['epochs'] if 'epochs' in kwargs else 100
 
         for epoch in range(epochs):
-            running_loss = 0
-            loss_grad = loss.gradient(model(tx), y)
-            x = np.transpose(tx, (1, 0))
             out = model(tx)
-            print(loss(out, y))
-            model.set_param(model.get_params() - lr * np.dot(np.transpose(tx, (1, 0)),
-                                                             loss.gradient(model(tx), y)))
+            # print(loss(out, y))
+            gradient = np.dot(np.transpose(tx, (1, 0)), loss.gradient(model(tx), y))
+            model.set_param(model.get_params() - lr * gradient)
 
+            if np.sum(np.abs(gradient)) < lr*10**-2/model.get_params().size:
+                break
 
 
 class Ridge(LinearOptimizer):
