@@ -99,7 +99,7 @@ if __name__ == "__main__":
     # split data again: different files (ACTUAL TESTING FOR SUBMISSION)
     x_train = tx[:250000, :]
     x_test = tx[250000:, :]
-    # print("trainsize should be like 250000",train_size[0])
+    # print("train size should be like 250000",train_size[0])
 
     # get the model and regression
     m = LinearModel(x_train.shape[1]) 
