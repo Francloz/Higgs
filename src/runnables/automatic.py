@@ -2,14 +2,7 @@ import os
 import sys
 sys.path.append(os.path.split(os.path.split(os.path.dirname(os.path.abspath(__file__)))[0])[0])
 
-from src.optimization.linear import *
-from src.model.classifier.logistic import Logistic
-from src.functions.distance import L2
-from src.utils.data_manipulation import *
-
-from src.optimization.linear import *
 from src.optimization.logistic import *
-from src.preconditioning.normalization import *
 from src.preconditioning.feature_filling import *
 from src.functions.loss import LogCosh
 

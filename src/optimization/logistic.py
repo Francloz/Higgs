@@ -1,10 +1,12 @@
-from src.optimization.optimizer import Optimizer
-from src.model.classifier.logistic import Logistic
-from src.utils.data_manipulation import batch_iter
-from src.functions.activation_functions import Sigmoid
-from src.functions.loss import MAE
 # from src.functions.loss import MSE
 import numpy as np
+
+from src.functions.activation_functions import Sigmoid
+from src.functions.loss import MAE
+from src.model.classifier.logistic import Logistic
+from src.optimization.optimizer import Optimizer
+from src.utils.data_manipulation import batch_iter
+
 
 class LogisticGD(Optimizer):
     def __str__(self):
@@ -27,7 +29,6 @@ class LogisticGD(Optimizer):
             w = model.get_params()
             grad = tx.T.dot(sigma(tx.dot(w))-y) - regularize*w
             model.set_param(w - lr*grad)
-            # print(MSE()(sigma(tx.dot(w)), y))
             if np.sum(np.abs(grad)) < lr * 10 ** -2 / model.get_params().size:
                 return
 
@@ -46,6 +47,7 @@ class LogisticSGD(Optimizer):
         :param loss: loss function
         :param lr: learning rate
         :param epoch: number of times to go over the dataset
+        :param epoch_step: epoch step between lr scheduling and lr scaling
         """
         batch_size = kwargs['batch_size'] if 'batch_size' in kwargs else 1
         num_batches = min(kwargs['num_batches'], tx.shape[0]) if 'num_batches' in kwargs else 1000
@@ -66,7 +68,6 @@ class LogisticSGD(Optimizer):
                     acc_grad += np.sum(np.abs(grad))
                     model.set_param(w - lr*grad)
                     running_loss += MAE()(model(batch_tx), batch_y)
-                # print(running_loss/batch_size/num_batches)
 
                 if acc_grad < lr * 10 ** -2 / model.get_params().size:
                     return

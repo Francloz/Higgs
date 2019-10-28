@@ -1,10 +1,7 @@
-from src.model.regression.linear_model import *
+from src.functions.activation_functions import *
 from src.optimization.linear import *
 from src.optimization.logistic import *
 from src.optimization.nn_layer import *
-from src.functions.activation_functions import *
-from src.model.classifier.logistic import Logistic
-from src.model.nn.nn_layer import NNLayer
 
 if __name__ == "__main__":
     model = LinearModel((2, 2))

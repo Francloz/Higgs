@@ -1,12 +1,11 @@
-from src.model.regression.linear_model import LinearModel
-from src.optimization.linear import LinearSGD
-from src.functions.loss import LogCosh
-from src.utils.data_manipulation import split
-from src.preconditioning.normalization import MinMaxNormalizer
-import numpy as np
-from src.preconditioning.feature_filling import MeanFilling
 import os
 
+import numpy as np
+
+from src.functions.loss import LogCosh
+from src.model.regression.linear_model import LinearModel
+from src.optimization.linear import LinearSGD
+from src.preconditioning.feature_filling import MeanFilling
 
 if __name__ == "__main__":
     path = os.path.split(os.path.split(os.path.dirname(os.path.abspath(__file__)))[0])[0]

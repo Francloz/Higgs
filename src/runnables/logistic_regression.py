@@ -1,13 +1,10 @@
-from src.optimization.linear import *
-from src.model.classifier.logistic import Logistic
-from src.functions.distance import L2
-from src.utils.data_manipulation import *
-from src.optimization.logistic import LogisticSGD
-from src.functions.loss import MAE
-from src.preconditioning.feature_filling import MeanFilling
-from src.preconditioning.normalization import MinMaxNormalizer
 import os
 
+from src.model.classifier.logistic import Logistic
+from src.optimization.logistic import LogisticSGD
+from src.preconditioning.feature_filling import MeanFilling
+from src.preconditioning.normalization import MinMaxNormalizer
+from src.utils.data_manipulation import *
 
 if __name__ == "__main__":
     path = os.path.split(os.path.split(os.path.dirname(os.path.abspath(__file__)))[0])[0] + '\\resources\\'

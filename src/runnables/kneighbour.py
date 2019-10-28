@@ -1,12 +1,8 @@
-from src.optimization.linear import *
-from src.model.classifier.clustering import *
-from src.functions.activation_functions import *
-from src.preconditioning.normalization import *
-from src.functions.distance import L2
-from src.utils.data_manipulation import *
-from src.preconditioning.feature_extraction import LDA
 import os
 
+from src.functions.distance import L2
+from src.model.classifier.clustering import *
+from src.utils.data_manipulation import *
 
 if __name__ == "__main__":
     path = os.path.split(os.path.split(os.path.dirname(os.path.abspath(__file__)))[0])[0] + '\\resources\\'
@@ -18,9 +14,6 @@ if __name__ == "__main__":
     y = np.expand_dims(train[:, 1], axis=1)
     tx = train[:, 2:]
 
-    # normalizer = GaussianNormalizer()
-    # fe = LDA(tx, y)
-    # tx = fe(normalizer(tx))
     running_loss = 0
     batch_size = 1000
     max_batches = 5

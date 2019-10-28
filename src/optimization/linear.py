@@ -1,8 +1,8 @@
-from src.optimization.optimizer import Optimizer
-from src.utils.data_manipulation import *
 from src.functions.loss import LogCosh
 from src.model.regression.linear_model import LinearModel
-import sys
+from src.optimization.optimizer import Optimizer
+from src.utils.data_manipulation import *
+
 
 class LinearOptimizer(Optimizer):
     """
@@ -70,8 +70,6 @@ class LinearGD(LinearOptimizer):
         epochs = kwargs['epochs'] if 'epochs' in kwargs else 100
 
         for epoch in range(epochs):
-            out = model(tx)
-            # print(loss(out, y))
             gradient = np.dot(np.transpose(tx, (1, 0)), loss.gradient(model(tx), y))
             model.set_param(model.get_params() - lr * gradient)
 
@@ -91,8 +89,6 @@ class Ridge(LinearOptimizer):
         :param lambda_: ridge hyper-parameter
         """
         lambda_ = kwargs['lambda_'] if 'lambda_' in kwargs else 10**-5
-
-        #w=(XT*X+lambda*I)^-1*XT*y
         w = np.linalg.inv(np.transpose(tx)@tx + lambda_/(2*len(y))*np.eye(tx.shape[1], tx.shape[1])) @np.transpose(tx) @y
         model.set_param(w)
 
@@ -112,16 +108,5 @@ class LS(LinearOptimizer):
         :param tx: sample
         :param y: labels
         """
-        #w=(XT*X)^-1*ATy
         w=np.linalg.inv(tx.transpose()@tx)@tx.transpose()@y
         model.set_param(w)
-
-
-class OLS(LinearOptimizer):
-    def __call__(self, model: LinearModel, tx, y, **kwargs):
-        """
-        Performs Ordinary Least Squares
-        :param tx: sample
-        :param y: labels
-        """
-        pass

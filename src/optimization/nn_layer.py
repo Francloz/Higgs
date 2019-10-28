@@ -1,22 +1,23 @@
+import numpy as np
+
+from src.functions.loss import LogCosh
 from src.model.nn.nn_layer import NNLayer
 from src.optimization.optimizer import Optimizer
-from src.functions.loss import LogCosh
-import numpy as np
 from src.utils.data_manipulation import batch_iter
 
 
 class NNLayerSGD(Optimizer):
     def __call__(self, model: NNLayer, tx, y, **kwargs):
         """
-                Performs Stochastic Gradient Descent.
-                :param tx: sample
-                :param y: labels
-                :param batch_size: size of the batches
-                :param num_batches: number of batches to learn
-                :param loss: loss function
-                :param lr: learning rate
-                :param epoch: number of times to go over the dataset
-                """
+        Performs Stochastic Gradient Descent.
+        :param tx: sample
+        :param y: labels
+        :param batch_size: size of the batches
+        :param num_batches: number of batches to learn
+        :param loss: loss function
+        :param lr: learning rate
+        :param epoch: number of times to go over the dataset
+        """
         batch_size = kwargs['batch_size'] if 'batch_size' in kwargs else 1
         num_batches = min(kwargs['num_batches'], tx.shape[0]) if 'num_batches' in kwargs else 1
         loss = kwargs['loss'] if 'loss' in kwargs else LogCosh()
@@ -54,12 +55,9 @@ class NNLayerGD(Optimizer):
 
         for i in range(epochs):
             txw = np.dot(tx, model.get_params())
-            loss_rad = loss.gradient(activation(txw), y)
-            act_grad = activation.gradient(txw)
             grad = lr * np.dot(np.transpose(tx, (1, 0)),
                                loss.gradient(activation(txw), y) *
                                activation.gradient(txw))
-            new_w = model.get_params() - grad
             model.set_param(model.get_params() - lr * np.dot(np.transpose(tx, (1, 0)),
                                                              loss.gradient(activation(txw), y) *
                                                              activation.gradient(txw)))

@@ -1,12 +1,14 @@
-from src.model.regression.linear_model import LinearModel
-from src.optimization.linear import LinearSGD
-from src.functions.loss import LogCosh
-from src.utils.data_manipulation import split
-from src.preconditioning.normalization import MinMaxNormalizer
+import os
+
 import numpy as np
 from matplotlib import pyplot as plt
-from matplotlib import cm # This allows different color schemes
-import os
+
+from src.functions.loss import LogCosh
+from src.model.regression.linear_model import LinearModel
+from src.optimization.linear import LinearSGD
+from src.preconditioning.normalization import MinMaxNormalizer
+from src.utils.data_manipulation import split
+
 
 def heatmap(data, row_labels, col_labels, ax=None,
             cbar_kw={}, cbarlabel="", **kwargs):
