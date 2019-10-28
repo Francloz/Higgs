@@ -26,18 +26,21 @@ if __name__ == "__main__":
     models = [LinearModel((n_features + 1, 1)),
               LinearModel((n_features + 1, 1)),
               Logistic(n_features + 1),
+              LinearModel((n_features + 1, 1)),
               LinearModel((n_features + 1, 1))]
 
     optimizers = [Ridge(),
                   LS(),
-                  LogisticSGD(),
-                  LinearSGD()]
+                  LinearSGD(),
+                  LinearGD(),
+                  LogisticSGD()]
 
-    optimizer_kwargs = [[{'lambda_': i} for i in np.linspace(0.45, 0.55, 20)],
+    optimizer_kwargs = [[{'lambda_': 0.5}],
                         [{}],
                         [{'batch_size': 25, 'loss': LogCosh(), 'lr': 10**-1, 'epochs': 1000, 'regularize': r}
-                         for r in np.logspace(0, 10, 20)],
-                        [{'batch_size': 25, 'loss': LogCosh(), 'lr': 10**-1, 'epochs': 1000}]]
+                         for r in range(2)],
+                        [{'batch_size': 25, 'loss': LogCosh(), 'lr': 10**-1, 'epochs': 1000}],
+                        []]
 
     normalizers = [
                    MinMaxNormalizer()
@@ -45,7 +48,7 @@ if __name__ == "__main__":
                    # , DecimalScaling()
                   ]
 
-    lrf = LinearRegressionFilling(data[:, mask], epochs=1)
+    lrf = LinearRegressionFilling(data[:, mask], epochs=100)
     lrf.load(path + '/src/preconditioning/regression_filler_params.npy')
 
     filling_data = [

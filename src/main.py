@@ -44,7 +44,7 @@ if __name__ == "__main__":
 
     parallel_nn = 10
     max_iter = 100
-    mask = [False, False, True, True,  True, False,  True,  True,  True,  True, False,  True,  True,  True,
+    mask = [False, False, True, True,  True, False,  True,  True,  True,  True, False,  False,  True,  True,
             True,  True,  True,  True,  True,  True,  True, False,  True,  True,  True, False,
             True,  True,  True,  True,  True,  True]
     nns = list(NeuralNetwork([NeuronLayer(np.sum(mask), 60, LeakyReLU()),

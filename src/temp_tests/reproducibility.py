@@ -1,3 +1,8 @@
+import sys
+import os
+
+sys.path.append(os.path.split(os.path.split(os.path.dirname(os.path.abspath(__file__)))[0])[0])
+
 from src.model.regression.linear_model import LinearModel
 from src.optimization.linear import LinearSGD
 from src.functions.loss import LogCosh
@@ -7,7 +12,6 @@ import numpy as np
 # from matplotlib import pyplot as plt
 from src.preconditioning.feature_filling import MeanFilling
 # from matplotlib import cm # This allows different color schemes
-import os
 
 
 # def heatmap(data, row_labels, col_labels, ax=None,
