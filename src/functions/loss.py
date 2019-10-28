@@ -70,6 +70,7 @@ class MAE(Loss):
 class LogCosh(Loss):
     def __str__(self):
         return "LogCosh"
+
     def __call__(self, x, y):
         """
         Computes the loss.

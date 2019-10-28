@@ -18,34 +18,47 @@ if __name__ == "__main__":
     path = os.path.split(os.path.split(os.path.dirname(os.path.abspath(__file__)))[0])[0]
     data = np.load(file=path + '\\resources\\' + 'train.npy')
 
-    models = [LinearModel((31, 1)),
-              LinearModel((31, 1)),
-              Logistic(31),
-              LinearModel((31, 1))]
+    mask = [False, False, True, True, True, False, True, True, True, True, False, True, True, True,
+            True, True, True, True, True, True, True, False, True, True, True, False,
+            True, True, True, True, True, True]
+
+    n_features = np.sum(mask)
+    models = [LinearModel((n_features + 1, 1)),
+              LinearModel((n_features + 1, 1)),
+              Logistic(n_features + 1),
+              LinearModel((n_features + 1, 1))]
 
     optimizers = [Ridge(),
                   LS(),
                   LogisticSGD(),
                   LinearSGD()]
 
-    optimizer_kwargs = [[{'lambda_': i} for i in np.logspace(-5, 0, 15)],
+    optimizer_kwargs = [[{'lambda_': i} for i in np.linspace(0.45, 0.55, 20)],
                         [{}],
                         [{'batch_size': 25, 'loss': LogCosh(), 'lr': 10**-1, 'epochs': 1000, 'regularize': r}
                          for r in np.logspace(0, 10, 20)],
                         [{'batch_size': 25, 'loss': LogCosh(), 'lr': 10**-1, 'epochs': 1000}]]
 
-    normalizers = [MinMaxNormalizer(),
-                   # GaussianNormalizer(),
-                   DecimalScaling()]
+    normalizers = [
+                   MinMaxNormalizer()
+                   # , GaussianNormalizer()
+                   # , DecimalScaling()
+                  ]
 
-    lrf = LinearRegressionFilling(data[:, 2:], epochs=0)
+    lrf = LinearRegressionFilling(data[:, mask], epochs=1)
     lrf.load(path + '/src/preconditioning/regression_filler_params.npy')
-    filling_data = [MeanFilling(data[:, 2:]),
-                    MedianFilling(data[:, 2:]),
-                    ClassAverageFilling(data[:, 2:], data[:, 1], n_classes=2),
-                    lrf]
+
+    filling_data = [
+                    MeanFilling(data[:, mask]),
+                    # MedianFilling(data[:, 2:]),
+                    # ClassAverageFilling(data[:, 2:], data[:, 1], n_classes=2),
+                    lrf
+                    ]
 
     n_initial = 10
+    np.random.seed(0)
+
+    min_error = np.inf
 
     for model, optimizer, optimizer_kwargs in zip(models, optimizers, optimizer_kwargs):
         for filler in filling_data:
@@ -58,9 +71,9 @@ if __name__ == "__main__":
                     for i in range(n_initial):
                         labels = np.reshape(data[:, 1], (-1, 1))
                         train, test = split(np.hstack([labels, np.hstack([np.reshape(np.ones(data.shape[0]), (-1, 1)),
-                                                                          normalizer(filler(data[:, 2:]))])]))
+                                                                          normalizer(filler(data[:, mask]))])]))
 
-                        model.set_param(np.random.uniform(low=-1, high=1, size=(31, 1)))
+                        model.set_param(np.random.uniform(low=-1, high=1, size=(n_features + 1, 1)))
                         optimizer(model, train[:, 1:], np.reshape(train[:, 0], (-1, 1)), **kwargs)
 
                         prediction = np.where(model(test[:, 1:]) > .5, 1, 0)
@@ -75,4 +88,5 @@ if __name__ == "__main__":
                         best_model_kwargs = best
                     print("Error for model", model, "using ", optimizer, dict([(a, str(x)) for a, x in kwargs.items()]),
                           " and ", normalizer, filler, " is ", min_error)
-                np.save(arr=best_model_kwargs, file='./' + str(model) + str(optimizer) + str(filler) + str(normalizer) + '.npy')
+                np.save(arr=best_model_kwargs, file='./' + str(model) + str(optimizer) + str(filler) + str(normalizer)
+                                                    + ("%0.5f" % min_error) + '.npy')
