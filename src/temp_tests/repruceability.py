@@ -81,14 +81,20 @@ if __name__ == "__main__":
     kwargs = {'batch_size': 25, 'loss': loss, 'lr': 10**-1, 'epochs': 1000, 'epoch_step': (100, .75)}
     optimizer = LinearSGD()
     n_models = 5
-    np.random.seed(0)
+
     mask = np.repeat(True, data.shape[1])
 
-    for i in range(data.shape[1]):
+    mask[3] = False
+    mask[8] = False
+
+    for i in range(9, data.shape[1]):
+        if not mask[i]:
+            continue
+        np.random.seed(0)
         min_error, best = np.inf, None
         mask[i] = False
         for it in range(n_models):
-            model.set_param(np.random.uniform(-1, 1, (data.shape[1], 1)))
+            model.set_param(np.random.uniform(-1, 1, (np.sum(mask) + 1, 1)))
             train, test = split(data)
 
             x = np.hstack([train[:, mask], np.ones((train.shape[0], 1))])
@@ -101,8 +107,14 @@ if __name__ == "__main__":
             if error < min_error:
                 min_error = error
                 best = model.get_params()
-        mask[i] = True
+
+        if min_error > 5:
+            mask[i] = True
+        else:
+            print(mask)
+
         np.save(arr=best, file='./saved/reproduce' + 'to' + str(i) + '_' + str("%0.2f" % min_error) + '.npy')
+    print(mask)
 
     """
     for i in range(32, data.shape[1]):
