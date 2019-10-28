@@ -49,9 +49,9 @@ class NeuronLayer:
         :return: returns the parameter that must be passed to the previous layer
         """
         if not self.hidden:
-            delta = np.dot(self.act_fun(self.last_output) - param, self.act_fun.derivative(self.last_output))
+            delta = np.dot(self.act_fun(self.last_output) - param, self.act_fun.gradient(self.last_output))
         else:
-            delta = param[:-1] * self.act_fun.derivative(self.last_output)
+            delta = param[:-1] * self.act_fun.gradient(self.last_output)
         err = np.dot(delta, np.transpose(self.last_input, (1, 0)))
         self.weights -= (lr() if isinstance(lr, Scheduler) else lr)*err
         return np.dot(np.transpose(self.weights, (1, 0)), delta)
