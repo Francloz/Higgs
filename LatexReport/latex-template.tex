@@ -27,18 +27,22 @@ When creating an algorithm there many choices for how to precondition the datase
 \label{sec:PreCond}
 
 \subsection{Filling in Missing Data}
---> maybe use numbers for these
-using means
-learning what to fill
-deleting those features
-deleteing thos data sets.
+After observing the dataset we deduced that the values -999 and 0 were fillers for when the actual value is unknown. They occurred too frequently and were irregular compared to the other values of the same feature. We tried several approaches to filling in these gaps.
+\begin{enumerate}
+\item Mean/Median: We tried taking the mean of the rest of the data, ignoring the fillers, for every feature are replacing their mean or median. Either cases resulted in improvement in the accuracy.
+\item Regression Filling
+	We used the made the features datapoints and each datapoint a feature and used linear regression to fill the blanks. This method was more complex and time consuming to train but resulted in slightly better improvements in accuracy.
+\item Delete features
+	Eliminating the features with a 0 or -999 reduced the number of features to 19 which resulted in a poor accuracy.
+\item Deleting samples
+	181886 of the data points have a 0 or -999 so deleting all such points causes our algorithm to drastically underfit the model since the remaining sample size is too small, resulting in a poor accuracy.
+\end{enumerate}
 
 \subsection{Feature Extraction and Augmentation}
---using Variance method and stuff
---using feature visualizaiton (can include graphs)
+We tried a few computational methods of feature extraction with few results. These include removing features with a large variance or correlation. Intuitively, if a feature has a large variance it may seem that it is just background noise and can be ignored; however many natural measuerments have noise and outliers so it is not enough of a reason to discard the value. Furthermore, we tried visualizing the data and removing features that are highly correlated with each other. If one feature can predict another it seems unlikely that we need both features since they would be near linear combinations of each other and that is already accounted for with the weights. Finally, we wrote python scripts try removing one feature at a time and running the regression. This method seemed to have the most success and improved the accuracy the most.
 
 \subsection{Normalization}
-list several normalizaiton methods we tried.
+The data as given has a wide domain and is hard to statistically analyze, so we used several normalization techniques on the data.
 \begin{enumerate}
 \item Guassian Normalizer
 \item Decimal Scaling
