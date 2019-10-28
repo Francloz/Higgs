@@ -1,3 +1,20 @@
 # Higgs
 
-The Higgs boson is an elementary particle in the Standard Model of physics which explains why other particles have mass. Its discovery at the Large Hadron Collider at CERN was announced in March 2013. In this project, you will apply machine learning techniques to actual CERN particle accelerator data to recreate the process of “discovering” the Higgs particle. For some background, physicists at CERN smash protons into one another at high speeds to generate even smaller particles as by-products of the collisions. Rarely, these collisions can produce a Higgs boson. Since the Higgs boson decays rapidly into other particles, scientists don’t observe it directly, but rather measure its“decay signature”, or the products that result from its decay process. Since many decay signatures look similar, it is our job to estimate the likelihood that a given event’s signature was the result of a Higgs boson (signal) or some other process/particle (background). In practice, this means that you will be given a vector of features representing the decay signature of a collision event, and asked to predict whether this event was signal (a Higgs boson) or background (something else). To do this, you will use the binary classification techniques we have discussed in the lectures. If you’re interested in more background on this dataset, we point you to the longer description here: https://higgsml.lal.in2p3.fr/files/2014/04/documentation_v1.8.pdf.
+This repository serves as a learning tool to train a model to detect the Higgs Boson particles using the
+renown CERN dataset.
+
+But this this repository also serves as a generic Machine Learning framework to train several kinds of models.
+All the implemented models can be found inside the model package, that can be trained
+with the optimizers found in the optimization package.
+
+For precondicioning, several methods can be found, among which are normalizers, missing data fillers,
+feature extraction and feature elimination.
+
+In order to visualize the data, you will find several useful methods defined in the plotting package.
+
+For data manipulation, please consult the utils package.
+
+In case that more precise tinkering of the loss and activation functions is desired, many different ones
+are implemented under the function package.
+
+For more information consult the documentation.
