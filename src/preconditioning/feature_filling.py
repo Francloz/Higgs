@@ -11,13 +11,13 @@ class MeanFilling:
         return "MeanFilling"
 
     def __init__(self, x):
-        self.means = np.array([np.mean(x[np.logical_and(x[:, i] != -999, x[:, i] != 0), i], axis=0) for i in range(x.shape[1])])
+        self.means = np.array([np.mean(x[x[:, i] != -999, i], axis=0) for i in range(x.shape[1])])
 
     def __call__(self, x):
         x_aux = np.array(x, copy=True)
         for i in range(x_aux.shape[1]):
-            x_aux[np.logical_or(x_aux[:, i] == -999, x_aux[:, i] == 0), i] = \
-                np.repeat(self.means[i], x_aux[np.logical_or(x_aux[:, i] == -999, x_aux[:, i] == 0), i].shape[0])
+            x_aux[x_aux[:, i] == -999, i] = \
+                np.repeat(self.means[i], x_aux[x_aux[:, i] == -999, i].shape[0])
         return x_aux
 
 
@@ -26,18 +26,14 @@ class MedianFilling:
         return "MedianFilling"
 
     def __init__(self, x):
-        for i in range(x.shape[1]):
-            aux = x[np.logical_and(x[:, i] != -999, x[:, i] != 0), i]
-            pass
-
-        self.medians = np.array([np.median(x[np.logical_and(x[:, i] != -999, x[:, i] != 0), i], axis=0) for i in range(x.shape[1])])
+        self.medians = np.array([np.median(x[x[:, i] != -999, i], axis=0) for i in range(x.shape[1])])
         pass
 
     def __call__(self, x):
         x_aux = np.array(x, copy=True)
         for i in range(x_aux.shape[1]):
-            x_aux[np.logical_or(x_aux[:, i] == -999, x_aux[:, i] == 0), i] = \
-                np.repeat(self.medians[i], x_aux[np.logical_or(x_aux[:, i] == -999, x_aux[:, i] == 0), i].shape[0])
+            x_aux[x_aux[:, i] == -999, i] = \
+                np.repeat(self.medians[i], x_aux[x_aux[:, i] == -999, i].shape[0])
         return x_aux
 
 
@@ -48,17 +44,15 @@ class ClassAverageFilling:
     def __init__(self, x, y, n_classes=2):
         # Smth wrong here
         self.means = np.sum(np.vstack([np.sum(y == c) *
-                                       np.array([np.mean(x[np.logical_and(np.logical_and(x[:, i] != -999, x[:, i] != 0),
-                                                                          y == 0), i],
-                                                         axis=0) for i in range(x.shape[1])])
+                                       np.array([np.mean(x[np.logical_and(x[:, i] != -999, y == 0), i], xis=0)
+                                                 for i in range(x.shape[1])])
                                        for c in range(n_classes)]), axis=0) / x.shape[0]
         pass
 
     def __call__(self, x):
         x_aux = np.array(x, copy=True)
         for i in range(x_aux.shape[1]):
-            x_aux[np.logical_or(x_aux[:, i] == -999, x_aux[:, i] == 0), i] = \
-                np.repeat(self.means[i], x_aux[np.logical_or(x_aux[:, i] == -999, x_aux[:, i] == 0), i].shape[0])
+            x_aux[x_aux[:, i] == -999, i] = np.repeat(self.means[i], x_aux[x_aux[:, i] == -999, i].shape[0])
         return x_aux
 
 
@@ -67,7 +61,7 @@ class LinearRegressionFilling:
         return "LinearRegressionFilling"
 
     def __init__(self, x, epochs=0):
-        x = x[~np.logical_or(np.any(x == -999, axis=1), np.any(x == 0, axis=1))]
+        x = x[~np.any(x == -999, axis=1)]
         self.normalizer = MinMaxNormalizer()
         x = self.normalizer(x)
         self.models = [LinearModel((x.shape[1]-1, 1)) for i in range(x.shape[1])]
@@ -97,7 +91,7 @@ class LinearRegressionFilling:
 
     def __call__(self, x):
         mask = np.repeat(True, x.shape[1])
-        indexes = [np.logical_or(x[:, i] == -999, x[:, i] == 0) for i in range(x.shape[1])]
+        indexes = [x[:, i] == -999 for i in range(x.shape[1])]
         aux = self.normalizer(MedianFilling(x)(x))
         for i in range(x.shape[1]):
             mask[i] = False

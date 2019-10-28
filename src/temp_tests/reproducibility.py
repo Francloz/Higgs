@@ -4,71 +4,71 @@ from src.functions.loss import LogCosh
 from src.utils.data_manipulation import split
 from src.preconditioning.normalization import MinMaxNormalizer
 import numpy as np
-from matplotlib import pyplot as plt
+# from matplotlib import pyplot as plt
 from src.preconditioning.feature_filling import MeanFilling
-from matplotlib import cm # This allows different color schemes
+# from matplotlib import cm # This allows different color schemes
 import os
 
 
-def heatmap(data, row_labels, col_labels, ax=None,
-            cbar_kw={}, cbarlabel="", **kwargs):
-    """
-    Create a heatmap from a numpy array and two lists of labels.
-
-    Parameters
-    ----------
-    data
-        A 2D numpy array of shape (N, M).
-    row_labels
-        A list or array of length N with the labels for the rows.
-    col_labels
-        A list or array of length M with the labels for the columns.
-    ax
-        A `matplotlib.axes.Axes` instance to which the heatmap is plotted.  If
-        not provided, use current axes or create a new one.  Optional.
-    cbar_kw
-        A dictionary with arguments to `matplotlib.Figure.colorbar`.  Optional.
-    cbarlabel
-        The label for the colorbar.  Optional.
-    **kwargs
-        All other arguments are forwarded to `imshow`.
-    """
-
-    if not ax:
-        ax = plt.gca()
-
-    # Plot the heatmap
-    im = ax.imshow(data, **kwargs)
-
-    # Create colorbar
-    cbar = ax.figure.colorbar(im, ax=ax, **cbar_kw)
-    cbar.ax.set_ylabel(cbarlabel, rotation=-90, va="bottom")
-
-    # We want to show all ticks...
-    ax.set_xticks(np.arange(data.shape[1]))
-    ax.set_yticks(np.arange(data.shape[0]))
-    # ... and label them with the respective list entries.
-    ax.set_xticklabels(col_labels)
-    ax.set_yticklabels(row_labels)
-
-    # Let the horizontal axes labeling appear on top.
-    ax.tick_params(top=True, bottom=False,
-                   labeltop=True, labelbottom=False)
-
-    # Rotate the tick labels and set their alignment.
-    plt.setp(ax.get_xticklabels(), rotation=-30, ha="right",
-             rotation_mode="anchor")
-
-    # Turn spines off and create white grid.
-    for edge, spine in ax.spines.items():
-        spine.set_visible(False)
-
-    ax.set_xticks(np.arange(data.shape[1]+1)-.5, minor=True)
-    ax.set_yticks(np.arange(data.shape[0]+1)-.5, minor=True)
-    ax.grid(which="minor", color="w", linestyle='-', linewidth=3)
-    ax.tick_params(which="minor", bottom=False, left=False)
-
-    return im, cbar
+# def heatmap(data, row_labels, col_labels, ax=None,
+#             cbar_kw={}, cbarlabel="", **kwargs):
+#     """
+#     Create a heatmap from a numpy array and two lists of labels.
+#
+#     Parameters
+#     ----------
+#     data
+#         A 2D numpy array of shape (N, M).
+#     row_labels
+#         A list or array of length N with the labels for the rows.
+#     col_labels
+#         A list or array of length M with the labels for the columns.
+#     ax
+#         A `matplotlib.axes.Axes` instance to which the heatmap is plotted.  If
+#         not provided, use current axes or create a new one.  Optional.
+#     cbar_kw
+#         A dictionary with arguments to `matplotlib.Figure.colorbar`.  Optional.
+#     cbarlabel
+#         The label for the colorbar.  Optional.
+#     **kwargs
+#         All other arguments are forwarded to `imshow`.
+#     """
+#
+#     if not ax:
+#         ax = plt.gca()
+#
+#     # Plot the heatmap
+#     im = ax.imshow(data, **kwargs)
+#
+#     # Create colorbar
+#     cbar = ax.figure.colorbar(im, ax=ax, **cbar_kw)
+#     cbar.ax.set_ylabel(cbarlabel, rotation=-90, va="bottom")
+#
+#     # We want to show all ticks...
+#     ax.set_xticks(np.arange(data.shape[1]))
+#     ax.set_yticks(np.arange(data.shape[0]))
+#     # ... and label them with the respective list entries.
+#     ax.set_xticklabels(col_labels)
+#     ax.set_yticklabels(row_labels)
+#
+#     # Let the horizontal axes labeling appear on top.
+#     ax.tick_params(top=True, bottom=False,
+#                    labeltop=True, labelbottom=False)
+#
+#     # Rotate the tick labels and set their alignment.
+#     plt.setp(ax.get_xticklabels(), rotation=-30, ha="right",
+#              rotation_mode="anchor")
+#
+#     # Turn spines off and create white grid.
+#     for edge, spine in ax.spines.items():
+#         spine.set_visible(False)
+#
+#     ax.set_xticks(np.arange(data.shape[1]+1)-.5, minor=True)
+#     ax.set_yticks(np.arange(data.shape[0]+1)-.5, minor=True)
+#     ax.grid(which="minor", color="w", linestyle='-', linewidth=3)
+#     ax.tick_params(which="minor", bottom=False, left=False)
+#
+#     return im, cbar
 
 
 if __name__ == "__main__":
@@ -80,14 +80,11 @@ if __name__ == "__main__":
     model = LinearModel((data.shape[1], 1))
     kwargs = {'batch_size': 25, 'loss': loss, 'lr': 10**-1, 'epochs': 1000, 'epoch_step': (100, .75)}
     optimizer = LinearSGD()
-    n_models = 5
+    n_models = 2
 
     mask = np.repeat(True, data.shape[1])
 
-    mask[3] = False
-    mask[8] = False
-
-    for i in range(9, data.shape[1]):
+    for i in range(2, data.shape[1]):
         if not mask[i]:
             continue
         np.random.seed(0)
@@ -108,7 +105,7 @@ if __name__ == "__main__":
                 min_error = error
                 best = model.get_params()
 
-        if min_error > 5:
+        if min_error > 10:
             mask[i] = True
         else:
             print(mask)
