@@ -28,24 +28,30 @@ if __name__ == "__main__":
                   LogisticSGD(),
                   LinearSGD()]
 
-    optimizer_kwargs = [[{'lambda_': i} for i in np.logspace(-5, 0, 15)],
+    optimizer_kwargs = [[{'lambda_': i} for i in np.linspace(0.45, 0.55, 20)],
                         [{}],
                         [{'batch_size': 25, 'loss': LogCosh(), 'lr': 10**-1, 'epochs': 1000, 'regularize': r}
                          for r in np.logspace(0, 10, 20)],
                         [{'batch_size': 25, 'loss': LogCosh(), 'lr': 10**-1, 'epochs': 1000}]]
 
-    normalizers = [MinMaxNormalizer(),
-                   # GaussianNormalizer(),
-                   DecimalScaling()]
+    normalizers = [
+                   MinMaxNormalizer()
+                   # , GaussianNormalizer()
+                   # , DecimalScaling()
+                  ]
 
-    lrf = LinearRegressionFilling(data[:, 2:], epochs=0)
+    lrf = LinearRegressionFilling(data[:, 2:], epochs=100)
     lrf.load(path + '/src/preconditioning/regression_filler_params.npy')
-    filling_data = [MeanFilling(data[:, 2:]),
-                    MedianFilling(data[:, 2:]),
-                    ClassAverageFilling(data[:, 2:], data[:, 1], n_classes=2),
-                    lrf]
+
+    filling_data = [
+                    MeanFilling(data[:, 2:]),
+                    # MedianFilling(data[:, 2:]),
+                    # ClassAverageFilling(data[:, 2:], data[:, 1], n_classes=2),
+                    lrf
+                    ]
 
     n_initial = 10
+    np.random.seed(0)
 
     for model, optimizer, optimizer_kwargs in zip(models, optimizers, optimizer_kwargs):
         for filler in filling_data:
